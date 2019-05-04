@@ -1,3 +1,3 @@
 <template>
-  <h1>Account Home</h1>
+  <h1>Accoun</h1>
 </template>
