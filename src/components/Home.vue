@@ -1,27 +1,27 @@
 <template>
-      <v-container fluid fill-height>
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
-                <v-toolbar-title>ล็อกอิน</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <span>Source</span>
-                </v-tooltip>
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
-                  <v-text-field prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
-                  <v-text-field prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-container>
+    <v-container>
+    <h1>Welcome {{ this.$route.query.usr }}</h1>
+    <p>{{ showId }}</p>
+    </v-container>
 </template>
+
+<script>
+  import firebase from '../firebase'
+  import myId from '../main'
+  myId = this.$route.query.usr
+  export default {
+  name: 'App',
+  props: ['msg'],
+  created () {
+    // console.log(this.$route.query.id);
+    if(this.$route.query.usr == null){
+        this.$router.push("/")
+    }
+  },
+  data () {
+    return {
+        showId: myId
+    }
+  },
+}
+</script>
