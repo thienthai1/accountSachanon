@@ -20,7 +20,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="login()" color="primary">Login</v-btn>
+                <v-btn @click="login(usrname,passwrd,errmsg,isLogin)" color="primary">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -41,25 +41,35 @@ export default {
   data () {
     return {
         isLogin:false,
-        errmsg:''
+        errmsg:'',
+        usname:'',
+        passwrd:''
     }
   },
   methods: {
-    login: function() {
-      var usrname = this.usname;
-      var passwrd = this.passwrd;
+    login: function(usrname,passwrd,errmsg,isLogin) {
+      alert(usrname)
       var readRef = firebase.database().ref('/members/' + usrname + '/password/');
+      var route = this.$router
       var foo = 0;
       readRef.on('value', function(snapshot) {
-        foo = snapshot.val()
+              foo = snapshot.val()
+              alert(passwrd+snapshot.val())
+              if(foo == passwrd && passwrd != null){
+                  isLogin = true
+                  route.push({path:'/home', query: {usr:usrname} })
+                  location.reload(true)
+              }else{
+                errmsg = "* wrong username or password"
+              }
       });
-      setTimeout(function(){}, 3000)
-      if(passwrd == foo && passwrd != null){
-          this.isLogin = true
-          this.$router.push({path:'/home', query: {usr:usrname} })
-      }else{
-        this.errmsg = "* wrong username or password"
-      }
+    },
+    wait: function(ms) {
+        var start = new Date().getTime();
+        var end = start;
+        while(end < start + ms) {
+          end = new Date().getTime();
+        }
     }
   },
   created () {
