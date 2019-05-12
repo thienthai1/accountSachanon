@@ -42,7 +42,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>รายงานบัญชี</v-list-tile-title>
+              <v-list-tile-title>{{ userLogin }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -78,7 +78,8 @@ export default {
   name: 'App',
   data () {
     return {
-        isLogin:false,
+        userLogin: "",  
+        isLogin: false,
         errmsg:'',
         usname:'',
         passwrd:'',
@@ -107,6 +108,7 @@ export default {
     loginfunc: function(data,passwrd,usname) {
             if(data == passwrd && passwrd != null){
                 this.isLogin = true
+                this.userLogin = usname
                 this.$router.push({path:'/home', query: {usr:usname} })
             }else{
                 this.errmsg = "* wrong username or password"
@@ -115,6 +117,7 @@ export default {
   },
   created () {
     if(this.$route.query.usr!=null){
+      this.userLogin = this.$route.query.usr
       this.isLogin = true
     }
   }
