@@ -20,7 +20,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="login(usrname,passwrd,errmsg,isLogin)" color="primary">Login</v-btn>
+                <v-btn @click="login(usname,passwrd,errmsg,isLogin)" color="primary">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -28,8 +28,45 @@
       </v-container>
   </v-app>
   <v-app v-else>
-    <router-view>
-    </router-view>
+  <v-navigation-drawer
+      v-model="drawer"
+      permanent
+      absolute
+      app clipped-left
+    >
+      <v-toolbar flat class="transparent">
+        <v-list class="pa-0">
+          <v-list-tile avatar>
+            <v-list-tile-avatar>
+              <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_grey_512dp.png">
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>Welcome</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-list class="pt-0" dense>
+        <v-divider></v-divider>
+
+        <v-list-tile
+          v-for="item in items"
+          :key="item.title"
+          @click=""
+        >
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-content>
+      <router-view>
+      </router-view>
+    </v-content>
   </v-app>
 </template>
 
@@ -43,33 +80,32 @@ export default {
         isLogin:false,
         errmsg:'',
         usname:'',
-        passwrd:''
+        passwrd:'',
+        items: [
+        { title: 'Home', icon: 'dashboard' },
+        { title: 'About', icon: 'question_answer' }
+      ],
     }
   },
   methods: {
-    login: function(usrname,passwrd,errmsg,isLogin) {
-      alert(usrname)
-      var readRef = firebase.database().ref('/members/' + usrname + '/password/');
-      var route = this.$router
-      var foo = 0;
+    login: function(usname,passwrd) {
+      var readRef = firebase.database().ref('/members/' + usname + '/password/');
+      var loginfunc = this.loginfunc
+      this.$router.push({path:'/home', query: {usr:usname} })
       readRef.on('value', function(snapshot) {
-              foo = snapshot.val()
-              alert(passwrd+snapshot.val())
-              if(foo == passwrd && passwrd != null){
-                  isLogin = true
-                  route.push({path:'/home', query: {usr:usrname} })
-                  location.reload(true)
-              }else{
-                errmsg = "* wrong username or password"
-              }
-      });
+              loginfunc(snapshot.val(),passwrd,usname)
+      })
     },
-    wait: function(ms) {
-        var start = new Date().getTime();
-        var end = start;
-        while(end < start + ms) {
-          end = new Date().getTime();
-        }
+    wait: function() {
+        this.errmsg = "* wrong username or password"
+    },
+    loginfunc: function(data,passwrd,usname) {
+            if(data == passwrd && passwrd != null){
+                this.isLogin = true
+                this.$router.push({path:'/home', query: {usr:usname} })
+            }else{
+                this.errmsg = "* wrong username or password"
+            }
     }
   },
   created () {

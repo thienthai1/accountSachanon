@@ -1,24 +1,18 @@
 <template>
     <v-container>
-    <h1>Welcome {{ this.$route.query.usr }}</h1>
-    <h1>{{ showId }}</h1>
+      <h1>monalisa</h1>
     </v-container>
 </template>
 
 <script>
-  import firebase from '../firebase'
   export default {
-  name: 'App',
-  created () {
-    // console.log(this.$route.query.id);
-    // if(this.$route.query.usr == null){
-    //     this.$router.push("/")
-    // }
-  },
+  name: 'Home',
   data () {
     return {
-        
+        showId: this.$route.query.usr
     }
   },
+  methods: {
+  }
 }
 </script>
