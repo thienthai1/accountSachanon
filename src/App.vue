@@ -38,11 +38,11 @@
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_grey_512dp.png">
+              <img src="http://clipart-library.com/images/rTjK5j9yc.png">
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Welcome</v-list-tile-title>
+              <v-list-tile-title>รายงานบัญชี</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -62,6 +62,7 @@
             </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-divider></v-divider>
     </v-navigation-drawer>
     <v-content>
       <router-view>
@@ -82,8 +83,12 @@ export default {
         usname:'',
         passwrd:'',
         items: [
-        { title: 'Home', icon: 'dashboard' },
-        { title: 'About', icon: 'question_answer' }
+        { title: 'รายรับรายจ่าย'},
+        { title: 'ยอดซื้อ'},
+        { title: 'ยอดขาย'},
+        { title: 'สต๊อกสินค้า'},
+        { title: 'รายงาน'},
+        { title: 'ออกจากระบบ'}
       ],
     }
   },
