@@ -48,20 +48,48 @@
           </v-list-tile>
         </v-list>
       </v-toolbar>
+      <v-divider></v-divider>
+      <v-list
+        v-for="item in items"
+        :key="item.title"
+      >
+          <template v-if='!item.drop'>
+              <v-list-tile @click="link(item.url)">
+                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile>
+          </template>
+          <template v-else>
+              <v-list-group  value="false">
+                <template v-slot:activator>
+                    <v-list-tile>
+                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                    </v-list-tile>
+                </template>
+                  <!-- <v-list-tile @click="">
+                    <v-list-tile-action>
+                    </v-list-tile-action>
+                    <v-list-tile-title>ผ้าดิบ</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile @click="">
+                    <v-list-tile-action>
+                    </v-list-tile-action>
+                    <v-list-tile-title>ผ้าแปรรูป</v-list-tile-title>
+                  </v-list-tile> -->
+                  <v-list-tile 
+                    @click=""
+                    v-for="k in item.subt"
+                    :key="k.subtitle"
+                   >
+                    <v-list-tile-action>
+                    </v-list-tile-action>
+                    <v-list-tile-title>{{ k.subtitle }}</v-list-tile-title>
+                  </v-list-tile>
 
-      <v-list class="pt-0" dense>
-        <v-divider></v-divider>
-
-        <v-list-tile
-          v-for="item in items"
-          :key="item.title"
-          @click=link(item.url)
-        >
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile-content>
-        </v-list-tile>
+                  <!-- </v-list-tile>
+                    <v-list-tile-title></v-list-tile-title>
+                  </v-list-tile> -->
+              </v-list-group>
+          </template>
       </v-list>
       <v-divider></v-divider>
     </v-navigation-drawer>
@@ -85,11 +113,14 @@ export default {
         usname:'',
         passwrd:'',
         items: [
-        { title: 'รายรับรายจ่าย', url: {path:'/home', query: {usr:this.$route.query.usr} }},
-        { title: 'ยอดซื้อ', url: {path:'/bought', query: {usr:this.$route.query.usr} }},
-        { title: 'ยอดขาย', url: {path:'/sell', query: {usr:this.$route.query.usr} }},
-        { title: 'สต๊อกสินค้า', url: {path:'/stock', query: {usr:this.$route.query.usr} }},
-        { title: 'สรุปยอด', url: {path:'/report', query: {usr:this.$route.query.usr} }},
+        { title: 'รายรับรายจ่าย', url: {path:'/home', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'ยอดซื้อ', url: {path:'/bought', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'ยอดขาย', url: {path:'/sell', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'สต๊อกสินค้า', url: {path:'/stock', query: {usr:this.$route.query.usr} }, drop: true, subt:[
+          {subtitle: 'สินค้าดิบ'},
+          {subtitle: 'สินค้าแปรรูป'}
+        ]},
+        { title: 'สรุปยอด', url: {path:'/report', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'ออกจากระบบ', url: {path:'/'}}
       ],
     }
