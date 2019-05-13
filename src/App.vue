@@ -50,16 +50,17 @@ export default {
       var passwrd = this.passwrd;
       var readRef = firebase.database().ref('/members/' + usrname + '/password/');
       var foo = 0;
+      var isLogin = this.isLogin;
+      var errmsg = this.errmsg; 
       readRef.on('value', function(snapshot) {
         foo = snapshot.val()
+        if(passwrd == foo && passwrd != null){
+            isLogin = true
+            this.$router.push({path:'/home', query: {usr:usrname} })
+        }else{
+            errmsg = "* wrong username or password"
+        }
       });
-      setTimeout(function(){}, 3000)
-      if(passwrd == foo && passwrd != null){
-          this.isLogin = true
-          this.$router.push({path:'/home', query: {usr:usrname} })
-      }else{
-        this.errmsg = "* wrong username or password"
-      }
     }
   },
   created () {
