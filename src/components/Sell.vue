@@ -1,6 +1,6 @@
 <template>
     <v-container>
-      <h1>รายรับรายจ่าย</h1>
+      <h1>ยอดขาย</h1>
       <v-divider class="my-3"></v-divider>
       <v-data-table
         :headers="headers"
@@ -21,7 +21,7 @@
 
 <script>
   export default {
-  name: 'Home',
+  name: 'Sell',
   data () {
     return {
        headers: [
