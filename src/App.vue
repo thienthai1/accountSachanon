@@ -4,8 +4,8 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
             <v-card class="elevation-12">
-              <v-toolbar dark color="blue-grey darken-3">
-                <v-toolbar-title>ล็อกอิน</v-toolbar-title>
+              <v-toolbar dark color="grey darken-3">
+                <v-toolbar-title>Login</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-tooltip bottom>
                   <span>Source</span>
@@ -65,16 +65,6 @@
                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                     </v-list-tile>
                 </template>
-                  <!-- <v-list-tile @click="">
-                    <v-list-tile-action>
-                    </v-list-tile-action>
-                    <v-list-tile-title>ผ้าดิบ</v-list-tile-title>
-                  </v-list-tile>
-                  <v-list-tile @click="">
-                    <v-list-tile-action>
-                    </v-list-tile-action>
-                    <v-list-tile-title>ผ้าแปรรูป</v-list-tile-title>
-                  </v-list-tile> -->
                   <v-list-tile 
                     @click=""
                     v-for="k in item.subt"
@@ -84,10 +74,6 @@
                     </v-list-tile-action>
                     <v-list-tile-title>{{ k.subtitle }}</v-list-tile-title>
                   </v-list-tile>
-
-                  <!-- </v-list-tile>
-                    <v-list-tile-title></v-list-tile-title>
-                  </v-list-tile> -->
               </v-list-group>
           </template>
       </v-list>
@@ -114,8 +100,8 @@ export default {
         passwrd:'',
         items: [
         { title: 'รายรับรายจ่าย', url: {path:'/home', query: {usr:this.$route.query.usr} }, drop: false},
-        { title: 'ยอดซื้อ', url: {path:'/bought', query: {usr:this.$route.query.usr} }, drop: false},
-        { title: 'ยอดขาย', url: {path:'/sell', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'รายการซื้อ', url: {path:'/bought', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'รายการขาย', url: {path:'/sell', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'สต๊อกสินค้า', url: {path:'/stock', query: {usr:this.$route.query.usr} }, drop: true, subt:[
           {subtitle: 'สินค้าดิบ'},
           {subtitle: 'สินค้าแปรรูป'}
