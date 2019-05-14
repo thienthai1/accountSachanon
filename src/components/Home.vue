@@ -9,33 +9,38 @@
       >
         <template v-slot:items="props">
           <td>{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.calories }}</td>
-          <td class="text-xs-right">{{ props.item.fat }}</td>
-          <td class="text-xs-right">{{ props.item.carbs }}</td>
-          <td class="text-xs-right">{{ props.item.protein }}</td>
-          <td class="text-xs-right">{{ props.item.iron }}</td>
+          <td class="text-xs-left">{{ props.item.calories }}</td>
+          <td class="text-xs-left">{{ props.item.fat }}</td>
+          <td class="text-xs-left">{{ props.item.carbs }}</td>
+          <td class="text-xs-left">{{ props.item.protein }}</td>
+          <td class="text-xs-left">{{ props.item.iron }}</td>
         </template>
       </v-data-table>
     </v-container>
 </template>
 
 <script>
+import firebase from '../firebase'
   export default {
   name: 'Home',
+  beforeCreate() {
+    var readRef = firebase.database().ref("Outin")
+    readRef.once('value',function(snapshot){
+      snapshot.forEach(function(childSnapshot) {
+        console.log(childSnapshot.key + "," + childSnapshot.val())
+      });
+    });
+  },
   data () {
     return {
        headers: [
           {
-            text: 'Dessert (100g serving)',
+            text: 'วันที่',
             align: 'left',
-            sortable: false,
+            sortable: true,
             value: 'name'
           },
-          { text: 'Calories', value: 'calories' },
-          { text: 'Fat (g)', value: 'fat' },
-          { text: 'Carbs (g)', value: 'carbs' },
-          { text: 'Protein (g)', value: 'protein' },
-          { text: 'Iron (%)', value: 'iron' }
+          { text: 'รายการ', value: 'calories' },
         ],
         desserts: [
           {
