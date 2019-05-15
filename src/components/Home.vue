@@ -144,7 +144,7 @@ import firebase from '../firebase'
   },
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
+return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
     }
   },
 }
