@@ -35,8 +35,8 @@
             </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" flat @click="close">ยกเลิก</v-btn>
-            <v-btn color="blue darken-1" flat @click="">บันทึก</v-btn>
+              <v-btn color="blue darken-1" flat @click="close">ยกเลิก</v-btn>
+              <v-btn color="blue darken-1" flat @click="pushDB">บันทึก</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -57,14 +57,14 @@
             <v-icon
               small
               class="mr-2"
-              @click="editItem(5)"
+              @click="editItem(props.item.key)"
               v-ripple
             >
               edit
             </v-icon>
             <v-icon
               small
-              @click="deleteItem(item)"
+              @click="deleteItem(props.item.key)"
               v-ripple
             >
               delete
@@ -72,6 +72,25 @@
           </td>
         </template>
       </v-data-table>
+      <v-dialog
+        v-model="dialog2"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-text>
+            สำเร็จ
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="green darken-1"
+              flat="flat"
+              @click="dialog2 = false"
+            >
+              ตกลง
+            </v-btn>
+          </v-card-actions>        
+        </v-card>
+      </v-dialog>
     </v-container>
 </template>
 
@@ -83,6 +102,7 @@ import firebase from '../firebase'
   },
   data () {
     return {
+       dialog2: false,
        dialog: false,
        myData: [],
        pagination:{
@@ -112,11 +132,27 @@ import firebase from '../firebase'
   mounted: function () {
       var readRef = firebase.database().ref("Outin")
       var items = []
+      var jsAccn = {
+        date: "",
+        name: "",
+        price: "",
+        remark: "",
+        time: "",
+        key: ""
+      }
       var sortItems = []
       readRef.on('value', (snapshot) => {
         items = []
         snapshot.forEach( (childSnapshot) => {
-          items.push(childSnapshot.val())
+          jsAccn = {
+            date: childSnapshot.val().date,
+            name: childSnapshot.val().name,
+            price: childSnapshot.val().price,
+            remark: childSnapshot.val().remark,
+            time: childSnapshot.val().time,
+            key: childSnapshot.key      
+          }
+          items.push(jsAccn)
           this.myData = items
         });
         sortItems = []
@@ -126,7 +162,6 @@ import firebase from '../firebase'
         }
         this.myData = sortItems
       });
-      // this.myData = sortItems 
   },
   methods: {
       close () {
@@ -139,6 +174,43 @@ import firebase from '../firebase'
       editItem (item) {
         this.editedIndex = item
         this.dialog = true
+        var myref = firebase.database().ref("Outin/"+item)
+        myref.on('value', (snapshot) => {
+          this.editedItem.name = snapshot.val().name
+          this.editedItem.price = snapshot.val().price
+          this.editedItem.remark = snapshot.val().remark
+        })
+        
+      },
+      pushDB () {
+        if(this.editedIndex == -1){
+            var d = new Date 
+            var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+ + "/" + (d.getFullYear()+543) 
+            var myTime = ("0" + (d.getHours())).slice(-2) + ":" + ("0" + (d.getMinutes())).slice(-2)  
+            var readRef = firebase.database().ref("Outin")
+            readRef.push().set({
+                date: myDate,
+                name: this.editedItem.name,
+                price: this.editedItem.price,
+                remark: this.editedItem.remark,
+                time: myTime
+            })
+            this.dialog = false
+            this.dialog2 = true
+        }else{
+          var readRef = firebase.database().ref("Outin/"+this.editedIndex)
+          readRef.update({
+            name: this.editedItem.name,
+            price: this.editedItem.price,
+            remark: this.editedItem.remark 
+          })
+          this.dialog = false
+          this.dialog2 = true
+        }
+      },
+      deleteItem(key){
+        confirm('Are you sure you want to delete this item?') && firebase.database().ref("Outin/" + key).remove()
       }
       
   },
