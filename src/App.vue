@@ -54,7 +54,7 @@
         :key="item.title"
       >
           <template v-if='!item.drop'>
-              <v-list-tile @click="link(item.url)">
+              <v-list-tile v-ripple @click="link(item.url)">
                   <v-list-tile-title>{{ item.title }}</v-list-tile-title>
               </v-list-tile>
           </template>
@@ -69,6 +69,7 @@
                     @click=""
                     v-for="k in item.subt"
                     :key="k.subtitle"
+                    v-ripple
                    >
                     <v-list-tile-action>
                     </v-list-tile-action>
