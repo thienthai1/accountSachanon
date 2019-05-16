@@ -1,21 +1,20 @@
 <template>
-    <v-container>
-      <h1>สรุปยอด</h1>
-      <v-divider class="my-3"></v-divider>
-      <v-data-table
-        :headers="headers"
-        :items="desserts"
-        class="elevation-1"
-      >
-        <template v-slot:items="props">
-          <td>{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.calories }}</td>
-          <td class="text-xs-right">{{ props.item.fat }}</td>
-          <td class="text-xs-right">{{ props.item.carbs }}</td>
-          <td class="text-xs-right">{{ props.item.protein }}</td>
-          <td class="text-xs-right">{{ props.item.iron }}</td>
-        </template>
-      </v-data-table>
+    <v-container fluid>
+      <v-layout row wrap>
+          <v-flex xs4>
+            <v-card v-ripple  style="cursor: pointer;" color="blue-grey darken-2" class="white--text" elevation=10>
+                  <v-img
+                    src="https://www.thebalancesmb.com/thmb/SNMC96S3V5eACQUUvjxE4_pxBP0=/1280x853/filters:fill(auto,1)/accounting_161542265-569fcc015f9b58eba4ad3a90.jpg"
+                    height="200px"
+                  ></v-img>  
+              <v-card-title primary-title>
+                <div>
+                  <div class="headline">สรุปรายรับรายจ่ายประจำวัน</div>
+                </div>
+              </v-card-title>
+            </v-card>        
+          </v-flex>
+      </v-layout>
     </v-container>
 </template>
 

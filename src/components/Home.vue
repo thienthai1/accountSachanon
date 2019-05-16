@@ -126,7 +126,7 @@ import firebase from '../firebase'
           name: '',
           price: '',
           remark: ''
-        },
+        }
     }
   },
   mounted: function () {
@@ -210,7 +210,7 @@ import firebase from '../firebase'
         }
       },
       deleteItem(key){
-        confirm('Are you sure you want to delete this item?') && firebase.database().ref("Outin/" + key).remove()
+        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && firebase.database().ref("Outin/" + key).remove()
       }
       
   },
