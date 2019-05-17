@@ -7,6 +7,7 @@ import Stock from './components/Stock.vue'
 import Sell from './components/Sell.vue'
 import Report from './components/Report.vue'
 import Bought from './components/Bought.vue'
+import OutinSum from './components/OutinSum.vue'
 
 var myId = ""
 
@@ -22,7 +23,8 @@ const routes = [
 	{ path: '/stock', component: Stock, params: true},
 	{ path: '/sell', component: Sell, params: true},
 	{ path: '/report', component: Report, params: true},
-	{ path: '/bought', component: Bought, params: true}
+	{ path: '/bought', component: Bought, params: true},
+	{ path: '/outin', component: OutinSum, params: true}
 ];
 
 const router = new VueRouter({
