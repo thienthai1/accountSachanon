@@ -68,11 +68,40 @@
             <td class="text-xs-left">{{ props.item.name }}</td>
             <td class="text-xs-left">{{ props.item.price }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
+          <td class="text-xs-left">
+            <v-icon
+              small
+              class="mr-2"
+              @click="openPic(props.item.url)"
+              v-ripple
+            >
+              image
+            </v-icon>
+          </td>
             </template>
 
         </v-data-table>
         <v-divider class="my-3"></v-divider>
         <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รวมทั้งหมด: {{ sum }} บาท</h3>
+        <v-dialog
+            v-model="showPicDia"
+            width="100%"
+        >
+            <v-card>
+            <v-card-text class="justify-center" >
+                <img :src=receiptPic />
+            </v-card-text>
+            <v-card-actions>
+                <v-btn
+                color="green darken-1"
+                flat="flat"
+                @click="showPicDia = false"
+                >
+                ตกลง
+                </v-btn>
+            </v-card-actions>        
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -82,6 +111,8 @@ import { parse } from 'path';
   export default {
     data () {
       return {
+        receiptPic: "",
+        showPicDia: false,
         date: new Date().toISOString().substr(0, 10),
         menu2: false,
         menu3: false,
@@ -100,6 +131,7 @@ import { parse } from 'path';
             { text: 'รายการ', value: 'name', sortable: false },
             { text: 'ราคา', value: 'price', sortable: false },
             { text: 'หมายเหตุ', value: 'remark', sortable: false },
+            { text: '', sortable: false}
         ]
       }
     },
@@ -127,7 +159,8 @@ import { parse } from 'path';
                     price: childSnapshot.val().price,
                     remark: childSnapshot.val().remark,
                     time: childSnapshot.val().time,
-                    key: childSnapshot.key      
+                    key: childSnapshot.key,
+                    url: childSnapshot.val().url      
                 }
                 if(childSnapshot.val().date == nowDate){
                     items.push(jsAccn)
@@ -167,7 +200,11 @@ import { parse } from 'path';
                 }
             }
             return false
-        } 
+        },
+        openPic(pic){
+            this.showPicDia = true
+            this.receiptPic = pic
+        }
     },
     watch: {
         date2: function () {

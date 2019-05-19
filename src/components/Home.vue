@@ -31,6 +31,9 @@
                     </v-text-field>
                   </v-flex>
                 </v-layout>
+                <v-layout row wrap>
+                  <input label="test" type="file" onchange="previewFile()" id="files" name="files[]" multiple />
+                </v-layout>
               </v-container>
             </v-card-text>
           <v-card-actions>
@@ -54,6 +57,14 @@
           <td class="text-xs-left">{{ props.item.price }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
+            <v-icon
+              small
+              class="mr-2"
+              @click="openPic(props.item.url)"
+              v-ripple
+            >
+              image
+            </v-icon>
             <v-icon
               small
               class="mr-2"
@@ -91,6 +102,25 @@
           </v-card-actions>        
         </v-card>
       </v-dialog>
+      <v-dialog
+        v-model="showPicDia"
+        width="100%"
+      >
+        <v-card>
+          <v-card-text class="justify-center" >
+            <img :src=receiptPic />
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="green darken-1"
+              flat="flat"
+              @click="showPicDia = false"
+            >
+              ตกลง
+            </v-btn>
+          </v-card-actions>        
+        </v-card>
+      </v-dialog>
     </v-container>
 </template>
 
@@ -102,6 +132,8 @@ import firebase from '../firebase'
   },
   data () {
     return {
+       receiptPic: "",
+       showPicDia: false,
        dialog2: false,
        dialog: false,
        myData: [],
@@ -125,7 +157,8 @@ import firebase from '../firebase'
         editedItem: {
           name: '',
           price: '',
-          remark: ''
+          remark: '',
+          url: ''
         }
     }
   },
@@ -138,7 +171,8 @@ import firebase from '../firebase'
         price: "",
         remark: "",
         time: "",
-        key: ""
+        key: "",
+        url: ""
       }
       var sortItems = []
       readRef.on('value', (snapshot) => {
@@ -150,7 +184,8 @@ import firebase from '../firebase'
             price: childSnapshot.val().price,
             remark: childSnapshot.val().remark,
             time: childSnapshot.val().time,
-            key: childSnapshot.key      
+            key: childSnapshot.key,
+            url: childSnapshot.val().url     
           }
           items.push(jsAccn)
           this.myData = items
@@ -189,30 +224,80 @@ import firebase from '../firebase'
  + "/" + (d.getFullYear()+543) 
             var myTime = ("0" + (d.getHours())).slice(-2) + ":" + ("0" + (d.getMinutes())).slice(-2)  
             var readRef = firebase.database().ref("Outin")
-            readRef.push().set({
-                date: myDate,
-                name: this.editedItem.name,
-                price: this.editedItem.price,
-                remark: this.editedItem.remark,
-                time: myTime
+            var file = document.getElementById("files").files[0];
+            var storageRef = firebase.storage().ref();
+            var thisRef = storageRef.child(file.name);
+            var myUrl = 'my url'
+            thisRef.put(file).then(function(snapshot) {
+                console.log('Uploaded a blob or file!');
+            });
+            thisRef.getDownloadURL().then( (url) => {
+                myUrl = url
+                console.log(url);
+                console.log('myUrl ' + myUrl)
+                readRef.push().set({
+                  date: myDate,
+                  name: this.editedItem.name,
+                  price: this.editedItem.price,
+                  remark: this.editedItem.remark,
+                  time: myTime,
+                  url: myUrl
+              })
+              this.dialog = false
+              this.dialog2 = true
             })
-            this.dialog = false
-            this.dialog2 = true
         }else{
-          var readRef = firebase.database().ref("Outin/"+this.editedIndex)
-          readRef.update({
-            name: this.editedItem.name,
-            price: this.editedItem.price,
-            remark: this.editedItem.remark 
-          })
-          this.dialog = false
-          this.dialog2 = true
+            var file = document.getElementById("files").files[0];
+            var storageRef = firebase.storage().ref();
+            var thisRef = storageRef.child(file.name);
+            var myUrl = 'my url'
+            thisRef.put(file).then(function(snapshot) {
+                console.log('Uploaded a blob or file!');
+            });
+            thisRef.getDownloadURL().then( (url) => {
+                myUrl = url
+                console.log(url);
+                console.log('myUrl ' + myUrl)
+                var readRef = firebase.database().ref("Outin/"+this.editedIndex)
+                readRef.update({
+                  name: this.editedItem.name,
+                  price: this.editedItem.price,
+                  remark: this.editedItem.remark,
+                  url: myUrl 
+                })
+                this.dialog = false
+                this.dialog2 = true
+            })
         }
       },
       deleteItem(key){
         confirm('ต้องการลบรายการนี้ใช่หรือไม่') && firebase.database().ref("Outin/" + key).remove()
+      },
+      openPic(pic){
+        this.showPicDia = true
+        this.receiptPic = pic
+      },
+      previewFile(){
+          // var storage = firebase.storage();
+
+          // var file = document.getElementById("files").files[0];
+          //   console.log(file);
+          
+          // var storageRef = firebase.storage().ref();
+          
+          // //dynamically set reference to the file name
+          // var thisRef = storageRef.child(file.name);
+
+          // //put request upload file to firebase storage
+          // thisRef.put(file).then(function(snapshot) {
+          //   console.log('Uploaded a blob or file!');
+          // });
+          
+          // //get request to get URL for uploaded file
+          // thisRef.getDownloadURL().then(function(url) {
+          //   console.log(url);
+          // })
       }
-      
   },
   computed: {
     formTitle () {
