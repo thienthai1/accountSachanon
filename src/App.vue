@@ -59,7 +59,7 @@
               </v-list-tile>
           </template>
           <template v-else>
-              <v-list-group  value="false">
+              <v-list-group  :value="false">
                 <template v-slot:activator>
                     <v-list-tile>
                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
