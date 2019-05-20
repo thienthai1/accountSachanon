@@ -67,6 +67,7 @@
             <td class="text-xs-left">{{ props.item.time }}</td>
             <td class="text-xs-left">{{ props.item.name }}</td>
             <td class="text-xs-left">{{ props.item.price }}</td>
+            <td class="text-xs-left">{{ props.item.type }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
             <v-icon
@@ -82,7 +83,11 @@
 
         </v-data-table>
         <v-divider class="my-3"></v-divider>
-        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รวมทั้งหมด: {{ sum }} บาท</h3>
+        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รวมทั้งหมด</h3>
+        <h3 class="green--text mr-3 text-xs-right mt-2">เงินสด: {{ totalCash }} บาท</h3>
+        <h3 class="blue--text mr-3 text-xs-right mt-2">เช็ค: {{ totalCheck }} บาท</h3>
+        <h3 class="yellow--text mr-3 text-xs-right mt-2">บัตรเครดิต/เดบิต: {{ totalCard }} บาท</h3>
+        <h3 class="pink--text mr-3 text-xs-right mt-2">โอน: {{ totalTransfer }} บาท</h3>
         <v-dialog
             v-model="showPicDia"
             width="100%"
@@ -111,6 +116,7 @@ import { parse } from 'path';
   export default {
     data () {
       return {
+        
         receiptPic: "",
         showPicDia: false,
         date: new Date().toISOString().substr(0, 10),
@@ -118,7 +124,10 @@ import { parse } from 'path';
         menu3: false,
         date2: new Date().toISOString().substr(0, 10),
         myDate: "this is my date",
-        sum: 0,
+        totalCash: 0,
+        totalCheck: 0,
+        totalCard: 0,
+        totalTransfer: 0,
         myData: [],
         headers: [
             {
@@ -130,6 +139,7 @@ import { parse } from 'path';
             { text: 'เวลา', value: 'time', sortable: false },
             { text: 'รายการ', value: 'name', sortable: false },
             { text: 'ราคา', value: 'price', sortable: false },
+            { text: 'ประเภท', value: 'type', sortable: false},
             { text: 'หมายเหตุ', value: 'remark', sortable: false },
             { text: '', sortable: false}
         ]
@@ -140,7 +150,7 @@ import { parse } from 'path';
         var nowDate = this.formatDate()
         // alert(nowDate)
         var items = []
-        this.sum = 0
+        this.totalCash = 0
         var jsAccn = {
             date: "",
             name: "",
@@ -159,12 +169,14 @@ import { parse } from 'path';
                     price: childSnapshot.val().price,
                     remark: childSnapshot.val().remark,
                     time: childSnapshot.val().time,
+                    type: this.previewType(childSnapshot.val().type),
                     key: childSnapshot.key,
                     url: childSnapshot.val().url      
                 }
                 if(childSnapshot.val().date == nowDate){
                     items.push(jsAccn)
-                    this.sum += parseInt(childSnapshot.val().price)
+                    // this.totalCash += parseInt(childSnapshot.val().price)
+                    this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
                     this.myData = items
                 }
             });
@@ -204,6 +216,28 @@ import { parse } from 'path';
         openPic(pic){
             this.showPicDia = true
             this.receiptPic = pic
+        },
+        previewType(type){
+            if(type == "cash"){
+            return "เงินสด"
+            }else if(type == "check"){
+            return "เช็ค"
+            }else if(type == "card"){
+            return "เครดิต/เดบิต"
+            }else{
+            return "โอน"
+            }
+        },
+        calTotal(type,money){
+            if(type == "cash"){
+                this.totalCash+=money
+            }else if(type == "check"){
+                this.totalCheck+=money
+            }else if(type == "card"){
+                this.totalCard+=money
+            }else if(type == "transfer"){
+                this.totalTransfer+=money
+            }
         }
     },
     watch: {
@@ -212,13 +246,14 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.sum = 0
+            this.totalCash = 0
             var jsAccn = {
                 date: "",
                 name: "",
                 price: "",
                 remark: "",
                 time: "",
+                type: "",
                 key: ""
             }
             var sortItems = []
@@ -231,11 +266,13 @@ import { parse } from 'path';
                             price: childSnapshot.val().price,
                             remark: childSnapshot.val().remark,
                             time: childSnapshot.val().time,
+                            type: this.previewType(childSnapshot.val().type),
                             key: childSnapshot.key      
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
-                            this.sum += parseInt(childSnapshot.val().price)
+                            // this.totalCash += parseInt(childSnapshot.val().price)
+                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
                             this.myData = items
                         }
                     });
@@ -252,7 +289,7 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.sum = 0
+            this.totalCash = 0
             var jsAccn = {
                 date: "",
                 name: "",
@@ -275,7 +312,8 @@ import { parse } from 'path';
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
-                            this.sum += parseInt(childSnapshot.val().price)
+                            // this.totalCash += parseInt(childSnapshot.val().price)
+                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
                             this.myData = items
                         }
                     });

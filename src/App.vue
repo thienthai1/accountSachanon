@@ -7,9 +7,9 @@
               <v-toolbar dark color="grey darken-3">
                 <v-toolbar-title>Login</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-tooltip bottom>
+                <!-- <v-tooltip bottom>
                   <span>Source</span>
-                </v-tooltip>
+                </v-tooltip> -->
               </v-toolbar>
               <v-card-text>
                 <v-form>

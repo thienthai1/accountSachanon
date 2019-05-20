@@ -6,9 +6,13 @@
           <v-btn v-on="on" class="green darken-3" small>+ สร้างรายการ</v-btn>
         </template>
         <v-card>
-            <v-card-title>
+            <!-- <v-card-title>
                 <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
+            </v-card-title> -->
+              <v-toolbar dark color="grey darken-3">
+                <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
@@ -29,6 +33,16 @@
                     v-model="editedItem.remark" 
                     label="หมายเหตุ">
                     </v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs12 sm6 md4>
+                      <v-radio-group v-model="editedItem.type" :mandatory="false">
+                        <v-radio label="เงินสด" value="cash"></v-radio>
+                        <v-radio label="เช็ค" value="check"></v-radio>
+                        <v-radio label="บัตรเครดิต/เดบิต" value="card"></v-radio>
+                        <v-radio label="โอน" value="transfer"></v-radio>
+                      </v-radio-group>
                   </v-flex>
                 </v-layout>
                 <v-layout row wrap>
@@ -56,6 +70,7 @@
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
           <td class="text-xs-left">{{ props.item.price }}</td>
+          <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
             <v-icon
@@ -129,10 +144,11 @@
 import firebase from '../firebase'
   export default {
   name: 'Home',
-  beforeCreate() {
-  },
   data () {
     return {
+       testdat: {
+         moo: "wrah"
+       },
        receiptPic: "",
        showPicDia: false,
        dialog2: false,
@@ -152,6 +168,7 @@ import firebase from '../firebase'
           { text: 'เวลา', value: 'time', sortable: false },
           { text: 'รายการ', value: 'name', sortable: false },
           { text: 'ราคา', value: 'price', sortable: false },
+          { text: 'ประเภท', value: 'type', sortable: false},
           { text: 'หมายเหตุ', value: 'remark', sortable: false },
           { text: '', sortable: false}
         ],
@@ -159,6 +176,7 @@ import firebase from '../firebase'
           name: '',
           price: '',
           remark: '',
+          type: 'cash',
           url: ''
         }
     }
@@ -173,6 +191,7 @@ import firebase from '../firebase'
         remark: "",
         time: "",
         key: "",
+        type: "",
         url: ""
       }
       var sortItems = []
@@ -185,6 +204,7 @@ import firebase from '../firebase'
             price: childSnapshot.val().price,
             remark: childSnapshot.val().remark,
             time: childSnapshot.val().time,
+            type: this.previewType(childSnapshot.val().type),
             key: childSnapshot.key,
             url: childSnapshot.val().url     
           }
@@ -203,7 +223,13 @@ import firebase from '../firebase'
       close () {
         this.dialog = false
         setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
+          this.editedItem = Object.assign({}, {
+          name: '',
+          price: '',
+          remark: '',
+          type: 'cash',
+          url: ''
+        })
           this.editedIndex = -1
         }, 300)
       },
@@ -215,6 +241,7 @@ import firebase from '../firebase'
           this.editedItem.name = snapshot.val().name
           this.editedItem.price = snapshot.val().price
           this.editedItem.remark = snapshot.val().remark
+          this.editedItem.type = snapshot.val().type
         })
         
       },
@@ -226,6 +253,11 @@ import firebase from '../firebase'
             var myTime = ("0" + (d.getHours())).slice(-2) + ":" + ("0" + (d.getMinutes())).slice(-2)  
             var readRef = firebase.database().ref("Outin")
             var file = document.getElementById("files").files[0];
+            if(file == null){
+              file = new File(['asasd1.png'],
+                     '../assets/logo.png', 
+                     {type:'image/png'});
+            }
             var storageRef = firebase.storage().ref();
             var thisRef = storageRef.child(file.name);
             var myUrl = 'my url'
@@ -241,6 +273,7 @@ import firebase from '../firebase'
                   name: this.editedItem.name,
                   price: this.editedItem.price,
                   remark: this.editedItem.remark,
+                  type: this.editedItem.type,
                   time: myTime,
                   url: myUrl
               })
@@ -249,6 +282,11 @@ import firebase from '../firebase'
             })
         }else{
             var file = document.getElementById("files").files[0];
+            if(file == null){
+              file = new File(['asasd1.png'],
+                     '../assets/logo.png', 
+                     {type:'image/png'});
+            }
             var storageRef = firebase.storage().ref();
             var thisRef = storageRef.child(file.name);
             var myUrl = 'my url'
@@ -264,6 +302,7 @@ import firebase from '../firebase'
                   name: this.editedItem.name,
                   price: this.editedItem.price,
                   remark: this.editedItem.remark,
+                  type: this.editedItem.type,
                   url: myUrl 
                 })
                 this.dialog = false
@@ -278,31 +317,21 @@ import firebase from '../firebase'
         this.showPicDia = true
         this.receiptPic = pic
       },
-      previewFile(){
-          // var storage = firebase.storage();
-
-          // var file = document.getElementById("files").files[0];
-          //   console.log(file);
-          
-          // var storageRef = firebase.storage().ref();
-          
-          // //dynamically set reference to the file name
-          // var thisRef = storageRef.child(file.name);
-
-          // //put request upload file to firebase storage
-          // thisRef.put(file).then(function(snapshot) {
-          //   console.log('Uploaded a blob or file!');
-          // });
-          
-          // //get request to get URL for uploaded file
-          // thisRef.getDownloadURL().then(function(url) {
-          //   console.log(url);
-          // })
+      previewType(type){
+          if(type == "cash"){
+            return "เงินสด"
+          }else if(type == "check"){
+            return "เช็ค"
+          }else if(type == "card"){
+            return "เครดิต/เดบิต"
+          }else{
+            return "โอน"
+          }
       }
   },
   computed: {
     formTitle () {
-return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
+      return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
     }
   },
 }
