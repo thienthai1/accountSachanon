@@ -225,6 +225,11 @@ import firebase from '../firebase'
             var myTime = ("0" + (d.getHours())).slice(-2) + ":" + ("0" + (d.getMinutes())).slice(-2)  
             var readRef = firebase.database().ref("Outin")
             var file = document.getElementById("files").files[0];
+            if(file == null){
+              file = new File(['asasd1.png'],
+                     '../assets/logo.png', 
+                     {type:'image/png'});
+            }
             var storageRef = firebase.storage().ref();
             var thisRef = storageRef.child(file.name);
             var myUrl = 'my url'
@@ -248,6 +253,11 @@ import firebase from '../firebase'
             })
         }else{
             var file = document.getElementById("files").files[0];
+            if(file == null){
+              file = new File(['asasd1.png'],
+                     '../assets/logo.png', 
+                     {type:'image/png'});
+            }
             var storageRef = firebase.storage().ref();
             var thisRef = storageRef.child(file.name);
             var myUrl = 'my url'
