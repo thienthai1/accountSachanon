@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
       <v-layout row wrap>
-          <v-flex xs4>
+          <v-flex xs12 md4 lg4>
             <v-card to="/outin" v-ripple  style="cursor: pointer;" color="blue-grey darken-2" class="white--text" elevation=10>
                   <v-img
                     src="https://www.thebalancesmb.com/thmb/SNMC96S3V5eACQUUvjxE4_pxBP0=/1280x853/filters:fill(auto,1)/accounting_161542265-569fcc015f9b58eba4ad3a90.jpg"

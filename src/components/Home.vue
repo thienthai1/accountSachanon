@@ -49,6 +49,7 @@
         :headers="headers"
         :items="myData"
         class="elevation-1"
+        expand = "true"
       >
         <template v-slot:items="props">
           <td>{{ props.item.date }}</td>

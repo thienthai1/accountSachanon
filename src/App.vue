@@ -94,6 +94,9 @@ export default {
   name: 'App',
   data () {
     return {
+        right: null,
+        drawer: true,
+        mini: true,
         userLogin: "",  
         isLogin: false,
         errmsg:'',
