@@ -261,64 +261,84 @@ import firebase from '../firebase'
             var myTime = ("0" + (d.getHours())).slice(-2) + ":" + ("0" + (d.getMinutes())).slice(-2)  
             var readRef = firebase.database().ref("Outin")
             var file = document.getElementById("files").files[0];
-            if(file == null){
-              file = new File(['asasd1.png'],
-                     '../assets/logo.png', 
-                     {type:'image/png'});
-            }
-            var storageRef = firebase.storage().ref();
-            var thisRef = storageRef.child(file.name);
-            var myUrl = 'my url'
-            thisRef.put(file).then(function(snapshot) {
-                console.log('Uploaded a blob or file!');
-            });
-            thisRef.getDownloadURL().then( (url) => {
-                myUrl = url
-                console.log(url);
-                console.log('myUrl ' + myUrl)
-                readRef.push().set({
-                  date: myDate,
-                  name: this.editedItem.name,
-                  price: this.editedItem.price,
-                  remark: this.editedItem.remark,
-                  type: this.editedItem.type,
-                  time: myTime,
-                  url: myUrl,
-                  status: this.editedItem.status
-              })
-              this.dialog = false
-              this.dialog2 = true
-            })
-        }else{
-            var file = document.getElementById("files").files[0];
-            if(file == null){
-              file = new File(['asasd1.png'],
-                     '../assets/logo.png', 
-                     {type:'image/png'});
-            }
-            var storageRef = firebase.storage().ref();
-            var thisRef = storageRef.child(file.name);
-            var myUrl = 'my url'
-            thisRef.put(file).then(function(snapshot) {
-                console.log('Uploaded a blob or file!');
-            });
-            thisRef.getDownloadURL().then( (url) => {
-                myUrl = url
-                console.log(url);
-                console.log('myUrl ' + myUrl)
-                var readRef = firebase.database().ref("Outin/"+this.editedIndex)
-                readRef.update({
-                  name: this.editedItem.name,
-                  price: this.editedItem.price,
-                  remark: this.editedItem.remark,
-                  type: this.editedItem.type,
-                  url: myUrl,
-                  status: this.editedItem.status 
+            if(file != null){
+              alert("null")
+              var storageRef = firebase.storage().ref();
+              var thisRef = storageRef.child(file.name);
+              var myUrl = 'my url'
+              thisRef.put(file).then(function(snapshot) {
+                  console.log('Uploaded a blob or file!');
+              });
+              thisRef.getDownloadURL().then( (url) => {
+                  myUrl = url
+                  console.log(url);
+                  console.log('myUrl ' + myUrl)
+                  readRef.push().set({
+                    date: myDate,
+                    name: this.editedItem.name,
+                    price: this.editedItem.price,
+                    remark: this.editedItem.remark,
+                    type: this.editedItem.type,
+                    time: myTime,
+                    url: myUrl,
+                    status: this.editedItem.status
                 })
                 this.dialog = false
                 this.dialog2 = true
-            })
-        }
+              })
+            }else{
+                  readRef.push().set({
+                    date: myDate,
+                    name: this.editedItem.name,
+                    price: this.editedItem.price,
+                    remark: this.editedItem.remark,
+                    type: this.editedItem.type,
+                    time: myTime,
+                    url: '',
+                    status: this.editedItem.status
+                })
+                this.dialog = false
+                this.dialog2 = true           
+            }
+        }else{
+            var file = document.getElementById("files").files[0];
+            if(file != null){
+              var storageRef = firebase.storage().ref();
+              var thisRef = storageRef.child(file.name);
+              var myUrl = 'my url'
+              thisRef.put(file).then(function(snapshot) {
+                  console.log('Uploaded a blob or file!');
+              });
+              thisRef.getDownloadURL().then( (url) => {
+                  myUrl = url
+                  console.log(url);
+                  console.log('myUrl ' + myUrl)
+                  var readRef = firebase.database().ref("Outin/"+this.editedIndex)
+                  readRef.update({
+                    name: this.editedItem.name,
+                    price: this.editedItem.price,
+                    remark: this.editedItem.remark,
+                    type: this.editedItem.type,
+                    url: myUrl,
+                    status: this.editedItem.status 
+                  })
+                  this.dialog = false
+                  this.dialog2 = true
+              })
+            }else{
+                  var readRef = firebase.database().ref("Outin/"+this.editedIndex)
+                  readRef.update({
+                    name: this.editedItem.name,
+                    price: this.editedItem.price,
+                    remark: this.editedItem.remark,
+                    type: this.editedItem.type,
+                    url: '',
+                    status: this.editedItem.status 
+                  })
+                  this.dialog = false
+                  this.dialog2 = true
+            }
+          }
       },
       deleteItem(key){
         confirm('ต้องการลบรายการนี้ใช่หรือไม่') && firebase.database().ref("Outin/" + key).remove()
