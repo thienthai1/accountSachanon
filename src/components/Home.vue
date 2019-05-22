@@ -45,6 +45,12 @@
                       </v-radio-group>
                   </v-flex>
                 </v-layout>
+                <v-layout>
+                    <v-radio-group v-model="editedItem.status" row>
+                      <v-radio label="จ่าย" value="outcome"></v-radio>
+                      <v-radio label="รับ" value="income"></v-radio>
+                    </v-radio-group>
+                </v-layout>
                 <v-layout row wrap>
                   <input label="test" type="file" onchange="previewFile()" id="files" name="files[]" multiple />
                 </v-layout>
@@ -177,7 +183,8 @@ import firebase from '../firebase'
           price: '',
           remark: '',
           type: 'cash',
-          url: ''
+          url: '',
+          status: ''
         }
     }
   },
@@ -242,6 +249,7 @@ import firebase from '../firebase'
           this.editedItem.price = snapshot.val().price
           this.editedItem.remark = snapshot.val().remark
           this.editedItem.type = snapshot.val().type
+          this.editedItem.status = snapshot.val().status
         })
         
       },
@@ -275,7 +283,8 @@ import firebase from '../firebase'
                   remark: this.editedItem.remark,
                   type: this.editedItem.type,
                   time: myTime,
-                  url: myUrl
+                  url: myUrl,
+                  status: this.editedItem.status
               })
               this.dialog = false
               this.dialog2 = true
@@ -303,7 +312,8 @@ import firebase from '../firebase'
                   price: this.editedItem.price,
                   remark: this.editedItem.remark,
                   type: this.editedItem.type,
-                  url: myUrl 
+                  url: myUrl,
+                  status: this.editedItem.status 
                 })
                 this.dialog = false
                 this.dialog2 = true

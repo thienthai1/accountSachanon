@@ -83,11 +83,18 @@
 
         </v-data-table>
         <v-divider class="my-3"></v-divider>
-        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รวมทั้งหมด</h3>
-        <h3 class="green--text mr-3 text-xs-right mt-2">เงินสด: {{ totalCash }} บาท</h3>
-        <h3 class="blue--text mr-3 text-xs-right mt-2">เช็ค: {{ totalCheck }} บาท</h3>
-        <h3 class="yellow--text mr-3 text-xs-right mt-2">บัตรเครดิต/เดบิต: {{ totalCard }} บาท</h3>
-        <h3 class="pink--text mr-3 text-xs-right mt-2">โอน: {{ totalTransfer }} บาท</h3>
+        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">จ่ายทั้งหมด</h3>
+        <h3 class="green--text mr-3 text-xs-right mt-2">จ่ายเงินสด: {{ totalOutCash }} บาท</h3>
+        <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ totalOutCheck }} บาท</h3>
+        <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ totalOutCard }} บาท</h3>
+        <h3 class="pink--text mr-3 text-xs-right mt-2">จ่ายโอน: {{ totalOutTransfer }} บาท</h3>
+        <v-divider class="my-3"></v-divider>
+        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รับทั้งหมด</h3>
+        <h3 class="green--text mr-3 text-xs-right mt-2">รับเงินสด: {{ totalInCash }} บาท</h3>
+        <h3 class="blue--text mr-3 text-xs-right mt-2">รับช็ค: {{ totalInCheck }} บาท</h3>
+        <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ totalInCard }} บาท</h3>
+        <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ totalInTransfer }} บาท</h3>
+        <v-divider class="my-3"></v-divider>
         <v-dialog
             v-model="showPicDia"
             width="100%"
@@ -124,10 +131,14 @@ import { parse } from 'path';
         menu3: false,
         date2: new Date().toISOString().substr(0, 10),
         myDate: "this is my date",
-        totalCash: 0,
-        totalCheck: 0,
-        totalCard: 0,
-        totalTransfer: 0,
+        totalInCash: 0,
+        totalInCheck: 0,
+        totalInCard: 0,
+        totalInTransfer: 0,
+        totalOutCash: 0,
+        totalOutCheck: 0,
+        totalOutCard: 0,
+        totalOutTransfer: 0,
         myData: [],
         headers: [
             {
@@ -150,7 +161,7 @@ import { parse } from 'path';
         var nowDate = this.formatDate()
         // alert(nowDate)
         var items = []
-        this.totalCash = 0
+        this.totalInCash = 0
         var jsAccn = {
             date: "",
             name: "",
@@ -175,8 +186,8 @@ import { parse } from 'path';
                 }
                 if(childSnapshot.val().date == nowDate){
                     items.push(jsAccn)
-                    // this.totalCash += parseInt(childSnapshot.val().price)
-                    this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
+                    // this.totalInCash += parseInt(childSnapshot.val().price)
+                    this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price),childSnapshot.val().status)
                     this.myData = items
                 }
             });
@@ -228,15 +239,27 @@ import { parse } from 'path';
             return "โอน"
             }
         },
-        calTotal(type,money){
-            if(type == "cash"){
-                this.totalCash+=money
-            }else if(type == "check"){
-                this.totalCheck+=money
-            }else if(type == "card"){
-                this.totalCard+=money
-            }else if(type == "transfer"){
-                this.totalTransfer+=money
+        calTotal(type,money,status){
+            if(status == "outcome"){
+                if(type == "cash"){
+                    this.totalOutCash+=money
+                }else if(type == "check"){
+                    this.totalOutCheck+=money
+                }else if(type == "card"){
+                    this.totalOutCard+=money
+                }else if(type == "transfer"){
+                    this.totalOutTransfer+=money
+                }
+            }else if(status == "income"){
+                if(type == "cash"){
+                    this.totalInCash+=money
+                }else if(type == "check"){
+                    this.totalInCheck+=money
+                }else if(type == "card"){
+                    this.totalInCard+=money
+                }else if(type == "transfer"){
+                    this.totalInTransfer+=money
+                } 
             }
         }
     },
@@ -246,7 +269,7 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.totalCash = 0
+            this.totalInCash = 0
             var jsAccn = {
                 date: "",
                 name: "",
@@ -271,8 +294,8 @@ import { parse } from 'path';
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
-                            // this.totalCash += parseInt(childSnapshot.val().price)
-                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
+                            // this.totalInCash += parseInt(childSnapshot.val().price)
+                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price),childSnapshot.val().status)
                             this.myData = items
                         }
                     });
@@ -289,7 +312,7 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.totalCash = 0
+            this.totalInCash = 0
             var jsAccn = {
                 date: "",
                 name: "",
@@ -312,8 +335,8 @@ import { parse } from 'path';
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
-                            // this.totalCash += parseInt(childSnapshot.val().price)
-                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price))
+                            // this.totalInCash += parseInt(childSnapshot.val().price)
+                            this.calTotal(childSnapshot.val().type,parseInt(childSnapshot.val().price),childSnapshot.val().status)
                             this.myData = items
                         }
                     });
