@@ -95,6 +95,7 @@
         <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ totalInCard }} บาท</h3>
         <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ totalInTransfer }} บาท</h3>
         <v-divider class="my-3"></v-divider>
+        <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ remainCash }} บาท</h3>
         <v-dialog
             v-model="showPicDia"
             width="100%"
@@ -123,7 +124,7 @@ import { parse } from 'path';
   export default {
     data () {
       return {
-        
+        remainCash: 0,
         receiptPic: "",
         showPicDia: false,
         date: new Date().toISOString().substr(0, 10),
@@ -259,8 +260,9 @@ import { parse } from 'path';
                     this.totalInCard+=money
                 }else if(type == "transfer"){
                     this.totalInTransfer+=money
-                } 
+                }
             }
+            this.remainCash = this.totalInCash - this.totalOutCash 
         }
     },
     watch: {
