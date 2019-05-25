@@ -75,7 +75,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ props.item.price }}</td>
+          <td class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -97,7 +97,7 @@
             </v-icon>
             <v-icon
               small
-              @click="deleteItem(props.item.key)"
+              @click="deleteItem(props.item.key,props.item.url)"
               v-ripple
             >
               delete
@@ -157,6 +157,7 @@ import firebase from '../firebase'
        },
        receiptPic: "",
        showPicDia: false,
+       dialog3: false,
        dialog2: false,
        dialog: false,
        myData: [],
@@ -271,23 +272,24 @@ import firebase from '../firebase'
             var myUrl = 'my url'
             thisRef.put(file).then(function(snapshot) {
                 console.log('Uploaded a blob or file!');
-            });
-            thisRef.getDownloadURL().then( (url) => {
-                myUrl = url
-                console.log(url);
-                console.log('myUrl ' + myUrl)
-                readRef.push().set({
-                  date: myDate,
-                  name: this.editedItem.name,
-                  price: this.editedItem.price,
-                  remark: this.editedItem.remark,
-                  type: this.editedItem.type,
-                  time: myTime,
-                  url: myUrl,
-                  status: this.editedItem.status
+            }).then( () => {
+              thisRef.getDownloadURL().then( (url) => {
+                  myUrl = url
+                  console.log(url);
+                  console.log('myUrl ' + myUrl)
+                  readRef.push().set({
+                    date: myDate,
+                    name: this.editedItem.name,
+                    price: this.editedItem.price,
+                    remark: this.editedItem.remark,
+                    type: this.editedItem.type,
+                    time: myTime,
+                    url: myUrl,
+                    status: this.editedItem.status
+                })
+                this.dialog = false
+                this.dialog2 = true
               })
-              this.dialog = false
-              this.dialog2 = true
             })
         }else{
             var file = document.getElementById("files").files[0];
@@ -320,8 +322,14 @@ import firebase from '../firebase'
             })
         }
       },
-      deleteItem(key){
-        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && firebase.database().ref("Outin/" + key).remove()
+      deleteItem(key,link){
+        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
+        firebase.database().ref("Outin/" + key).remove().then( () =>  {
+            var gsReference = firebase.storage().refFromURL(link)
+            gsReference.delete().then( () => {
+              this.dialog2 = true          
+            })
+        })
       },
       openPic(pic){
         this.showPicDia = true
@@ -337,6 +345,10 @@ import firebase from '../firebase'
           }else{
             return "โอน"
           }
+      },
+      formatPrice(price){
+        var p = price
+        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }
   },
   computed: {
