@@ -267,33 +267,33 @@ import firebase from '../firebase'
               var storageRef = firebase.storage().ref();
               var thisRef = storageRef.child(file.name);
               var myUrl = 'my url'
-              thisRef.put(file).then(function(snapshot) {
+              thisRef.put(file).then((snapshot) => {
                   console.log('Uploaded a blob or file!');
+                  thisRef.getDownloadURL().then( (url) => {
+                      myUrl = url
+                      console.log(url);
+                      console.log('myUrl ' + myUrl)
+                      readRef.push().set({
+                        date: myDate,
+                        name: this.editedItem.name,
+                        price: this.editedItem.price,
+                        remark: this.editedItem.remark,
+                        type: this.editedItem.type,
+                        time: myTime,
+                        url: myUrl,
+                        status: this.editedItem.status
+                    })
+                    this.dialog = false
+                    this.dialog2 = true
+                    this.editedItem = Object.assign({}, {
+                      name: '',
+                      price: '',
+                      remark: '',
+                      type: 'cash',
+                      url: ''
+                    })
+                  })
               });
-              thisRef.getDownloadURL().then( (url) => {
-                  myUrl = url
-                  console.log(url);
-                  console.log('myUrl ' + myUrl)
-                  readRef.push().set({
-                    date: myDate,
-                    name: this.editedItem.name,
-                    price: this.editedItem.price,
-                    remark: this.editedItem.remark,
-                    type: this.editedItem.type,
-                    time: myTime,
-                    url: myUrl,
-                    status: this.editedItem.status
-                })
-                this.dialog = false
-                this.dialog2 = true
-                this.editedItem = Object.assign({}, {
-                  name: '',
-                  price: '',
-                  remark: '',
-                  type: 'cash',
-                  url: ''
-                })
-              })
             }else{
                   readRef.push().set({
                     date: myDate,
