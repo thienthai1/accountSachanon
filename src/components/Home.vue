@@ -42,6 +42,7 @@
                         <v-radio label="เช็ค" value="check"></v-radio>
                         <v-radio label="บัตรเครดิต/เดบิต" value="card"></v-radio>
                         <v-radio label="โอน" value="transfer"></v-radio>
+                        <v-radio label="ยังไม่จ่าย" value="debt"></v-radio>
                       </v-radio-group>
                   </v-flex>
                 </v-layout>
@@ -75,7 +76,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ props.item.price }}</td>
+          <td class="text-xs-left">{{ numberWithCommas(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -262,7 +263,6 @@ import firebase from '../firebase'
             var readRef = firebase.database().ref("Outin")
             var file = document.getElementById("files").files[0];
             if(file != null){
-              alert("null")
               var storageRef = firebase.storage().ref();
               var thisRef = storageRef.child(file.name);
               var myUrl = 'my url'
@@ -285,6 +285,13 @@ import firebase from '../firebase'
                 })
                 this.dialog = false
                 this.dialog2 = true
+                this.editedItem = Object.assign({}, {
+                  name: '',
+                  price: '',
+                  remark: '',
+                  type: 'cash',
+                  url: ''
+                })
               })
             }else{
                   readRef.push().set({
@@ -298,7 +305,14 @@ import firebase from '../firebase'
                     status: this.editedItem.status
                 })
                 this.dialog = false
-                this.dialog2 = true           
+                this.dialog2 = true
+                this.editedItem = Object.assign({}, {
+                  name: '',
+                  price: '',
+                  remark: '',
+                  type: 'cash',
+                  url: ''
+                })
             }
         }else{
             var file = document.getElementById("files").files[0];
@@ -354,10 +368,16 @@ import firebase from '../firebase'
             return "เช็ค"
           }else if(type == "card"){
             return "เครดิต/เดบิต"
+          }else if(type == "debt"){
+            return "ยังไม่จ่าย"
           }else{
             return "โอน"
           }
-      }
+      },
+        numberWithCommas(x) {
+          var n = x
+          return n.toLocaleString()
+        }
   },
   computed: {
     formTitle () {

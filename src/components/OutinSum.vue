@@ -88,12 +88,14 @@
         <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ totalOutCheck }} บาท</h3>
         <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ totalOutCard }} บาท</h3>
         <h3 class="pink--text mr-3 text-xs-right mt-2">จ่ายโอน: {{ totalOutTransfer }} บาท</h3>
+        <h3 class="white--text mr-3 text-xs-right mt-2">หนี้: {{ outDebt }} บาท</h3>
         <v-divider class="my-3"></v-divider>
         <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รับทั้งหมด</h3>
         <h3 class="green--text mr-3 text-xs-right mt-2">รับเงินสด: {{ totalInCash }} บาท</h3>
         <h3 class="blue--text mr-3 text-xs-right mt-2">รับช็ค: {{ totalInCheck }} บาท</h3>
         <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ totalInCard }} บาท</h3>
         <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ totalInTransfer }} บาท</h3>
+        <h3 class="white--text mr-3 text-xs-right mt-2">หนี้: {{ inDebt }} บาท</h3>
         <v-divider class="my-3"></v-divider>
         <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ remainCash }} บาท</h3>
         <v-dialog
@@ -124,6 +126,8 @@ import { parse } from 'path';
   export default {
     data () {
       return {
+        inDebt: 0,
+        outDebt: 0,
         remainCash: 0,
         receiptPic: "",
         showPicDia: false,
@@ -230,15 +234,17 @@ import { parse } from 'path';
             this.receiptPic = pic
         },
         previewType(type){
-            if(type == "cash"){
+          if(type == "cash"){
             return "เงินสด"
-            }else if(type == "check"){
+          }else if(type == "check"){
             return "เช็ค"
-            }else if(type == "card"){
+          }else if(type == "card"){
             return "เครดิต/เดบิต"
-            }else{
+          }else if(type == "debt"){
+            return "ยังไม่จ่าย"
+          }else{
             return "โอน"
-            }
+          }
         },
         calTotal(type,money,status){
             if(status == "outcome"){
@@ -250,6 +256,8 @@ import { parse } from 'path';
                     this.totalOutCard+=money
                 }else if(type == "transfer"){
                     this.totalOutTransfer+=money
+                }else if(type == "debt"){
+                    this.outDebt += money
                 }
             }else if(status == "income"){
                 if(type == "cash"){
@@ -260,6 +268,8 @@ import { parse } from 'path';
                     this.totalInCard+=money
                 }else if(type == "transfer"){
                     this.totalInTransfer+=money
+                }else if(type == "debt"){
+                    this.inDebt += money
                 }
             }
             this.remainCash = this.totalInCash - this.totalOutCash 
