@@ -66,7 +66,7 @@
             <td>{{ props.item.date }}</td>
             <td class="text-xs-left">{{ props.item.time }}</td>
             <td class="text-xs-left">{{ props.item.name }}</td>
-            <td class="text-xs-left">{{ props.item.price }}</td>
+            <td class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
             <td class="text-xs-left">{{ props.item.type }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -84,6 +84,7 @@
         </v-data-table>
         <v-divider class="my-3"></v-divider>
         <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">จ่ายทั้งหมด</h3>
+<<<<<<< HEAD
         <h3 class="green--text mr-3 text-xs-right mt-2">จ่ายเงินสด: {{ totalOutCash }} บาท</h3>
         <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ totalOutCheck }} บาท</h3>
         <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ totalOutCard }} บาท</h3>
@@ -96,8 +97,20 @@
         <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ totalInCard }} บาท</h3>
         <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ totalInTransfer }} บาท</h3>
         <h3 class="white--text mr-3 text-xs-right mt-2">หนี้: {{ inDebt }} บาท</h3>
+=======
+        <h3 class="green--text mr-3 text-xs-right mt-2">จ่ายเงินสด: {{ formatPrice(totalOutCash) }} บาท</h3>
+        <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ formatPrice(totalOutCheck) }} บาท</h3>
+        <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ formatPrice(totalOutCard) }} บาท</h3>
+        <h3 class="pink--text mr-3 text-xs-right mt-2">จ่ายโอน: {{ formatPrice(totalOutTransfer) }} บาท</h3>
         <v-divider class="my-3"></v-divider>
-        <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ remainCash }} บาท</h3>
+        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รับทั้งหมด</h3>
+        <h3 class="green--text mr-3 text-xs-right mt-2">รับเงินสด: {{ formatPrice(totalInCash) }} บาท</h3>
+        <h3 class="blue--text mr-3 text-xs-right mt-2">รับช็ค: {{ formatPrice(totalInCheck) }} บาท</h3>
+        <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ formatPrice(totalInCard) }} บาท</h3>
+        <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ formatPrice(totalInTransfer ) }} บาท</h3>
+>>>>>>> bcaa59ff716774f609a37efae889433a94bd8d7d
+        <v-divider class="my-3"></v-divider>
+        <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ formatPrice(remainCash) }} บาท</h3>
         <v-dialog
             v-model="showPicDia"
             width="100%"
@@ -273,6 +286,10 @@ import { parse } from 'path';
                 }
             }
             this.remainCash = this.totalInCash - this.totalOutCash 
+        },
+        formatPrice(price){
+            var p = price
+            return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
     },
     watch: {

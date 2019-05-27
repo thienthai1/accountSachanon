@@ -76,7 +76,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ numberWithCommas(props.item.price) }}</td>
+          <td class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -98,7 +98,7 @@
             </v-icon>
             <v-icon
               small
-              @click="deleteItem(props.item.key)"
+              @click="deleteItem(props.item.key,props.item.url)"
               v-ripple
             >
               delete
@@ -158,6 +158,7 @@ import firebase from '../firebase'
        },
        receiptPic: "",
        showPicDia: false,
+       dialog3: false,
        dialog2: false,
        dialog: false,
        myData: [],
@@ -354,8 +355,14 @@ import firebase from '../firebase'
             }
           }
       },
-      deleteItem(key){
-        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && firebase.database().ref("Outin/" + key).remove()
+      deleteItem(key,link){
+        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
+        firebase.database().ref("Outin/" + key).remove().then( () =>  {
+            var gsReference = firebase.storage().refFromURL(link)
+            gsReference.delete().then( () => {
+              this.dialog2 = true          
+            })
+        })
       },
       openPic(pic){
         this.showPicDia = true
@@ -374,10 +381,10 @@ import firebase from '../firebase'
             return "โอน"
           }
       },
-        numberWithCommas(x) {
-          var n = x
-          return n.toLocaleString()
-        }
+      formatPrice(price){
+        var p = price
+        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }
   },
   computed: {
     formTitle () {
