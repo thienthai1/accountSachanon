@@ -40,7 +40,7 @@
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <img src="http://clipart-library.com/images/rTjK5j9yc.png">
+              <img src="https://cdn.ndtv.com/tech/images/gadgets/pikachu_hi_pokemon.jpg?output-quality=80">
             </v-list-tile-avatar>
 
             <v-list-tile-content>

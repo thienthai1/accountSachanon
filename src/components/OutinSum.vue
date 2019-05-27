@@ -66,7 +66,7 @@
             <td>{{ props.item.date }}</td>
             <td class="text-xs-left">{{ props.item.time }}</td>
             <td class="text-xs-left">{{ props.item.name }}</td>
-            <td class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+            <td :class="dealStatus(props.item.status)" class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
             <td class="text-xs-left">{{ props.item.type }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -84,7 +84,6 @@
         </v-data-table>
         <v-divider class="my-3"></v-divider>
         <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">จ่ายทั้งหมด</h3>
-<<<<<<< HEAD
         <h3 class="green--text mr-3 text-xs-right mt-2">จ่ายเงินสด: {{ totalOutCash }} บาท</h3>
         <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ totalOutCheck }} บาท</h3>
         <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ totalOutCard }} บาท</h3>
@@ -97,18 +96,6 @@
         <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ totalInCard }} บาท</h3>
         <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ totalInTransfer }} บาท</h3>
         <h3 class="white--text mr-3 text-xs-right mt-2">หนี้: {{ inDebt }} บาท</h3>
-=======
-        <h3 class="green--text mr-3 text-xs-right mt-2">จ่ายเงินสด: {{ formatPrice(totalOutCash) }} บาท</h3>
-        <h3 class="blue--text mr-3 text-xs-right mt-2">จ่ายเช็ค: {{ formatPrice(totalOutCheck) }} บาท</h3>
-        <h3 class="yellow--text mr-3 text-xs-right mt-2">จ่ายบัตรเครดิต/เดบิต: {{ formatPrice(totalOutCard) }} บาท</h3>
-        <h3 class="pink--text mr-3 text-xs-right mt-2">จ่ายโอน: {{ formatPrice(totalOutTransfer) }} บาท</h3>
-        <v-divider class="my-3"></v-divider>
-        <h3 style="text-decoration: underline;" class="mr-3 text-xs-right mt-2">รับทั้งหมด</h3>
-        <h3 class="green--text mr-3 text-xs-right mt-2">รับเงินสด: {{ formatPrice(totalInCash) }} บาท</h3>
-        <h3 class="blue--text mr-3 text-xs-right mt-2">รับช็ค: {{ formatPrice(totalInCheck) }} บาท</h3>
-        <h3 class="yellow--text mr-3 text-xs-right mt-2">รับบัตรเครดิต/เดบิต: {{ formatPrice(totalInCard) }} บาท</h3>
-        <h3 class="pink--text mr-3 text-xs-right mt-2">รับโอน: {{ formatPrice(totalInTransfer ) }} บาท</h3>
->>>>>>> bcaa59ff716774f609a37efae889433a94bd8d7d
         <v-divider class="my-3"></v-divider>
         <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ formatPrice(remainCash) }} บาท</h3>
         <v-dialog
@@ -186,7 +173,8 @@ import { parse } from 'path';
             price: "",
             remark: "",
             time: "",
-            key: ""
+            key: "",
+            status: "",
         }
         var sortItems = []
         readRef.on('value', (snapshot) => {
@@ -200,7 +188,8 @@ import { parse } from 'path';
                     time: childSnapshot.val().time,
                     type: this.previewType(childSnapshot.val().type),
                     key: childSnapshot.key,
-                    url: childSnapshot.val().url      
+                    url: childSnapshot.val().url,
+                    status: childSnapshot.val().status      
                 }
                 if(childSnapshot.val().date == nowDate){
                     items.push(jsAccn)
@@ -290,6 +279,25 @@ import { parse } from 'path';
         formatPrice(price){
             var p = price
             return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        },
+        resetNumber(){
+            this.totalInCash = 0,
+            this.totalInCheck = 0,
+            this.totalInCard = 0,
+            this.totalInTransfer = 0,
+            this.totalOutCash = 0,
+            this.totalOutCheck = 0,
+            this.totalOutCard = 0,
+            this.totalOutTransfer = 0,
+            this.inDebt = 0,
+            this.outDebt = 0
+        },
+        dealStatus(status){
+            if(status == 'income'){
+                return 'green--text'
+            }else if(status == 'outcome'){
+                return 'red--text'
+            }
         }
     },
     watch: {
@@ -298,7 +306,10 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.totalInCash = 0
+            // this.totalInCash = 0
+            // this.inDebt = 0
+            // this.outDebt = 0
+            this.resetNumber()
             var jsAccn = {
                 date: "",
                 name: "",
@@ -306,7 +317,8 @@ import { parse } from 'path';
                 remark: "",
                 time: "",
                 type: "",
-                key: ""
+                key: "",
+                status: "",
             }
             var sortItems = []
                 readRef.on('value', (snapshot) => {
@@ -319,7 +331,8 @@ import { parse } from 'path';
                             remark: childSnapshot.val().remark,
                             time: childSnapshot.val().time,
                             type: this.previewType(childSnapshot.val().type),
-                            key: childSnapshot.key      
+                            key: childSnapshot.key,
+                            status: childSnapshot.val().status      
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
@@ -341,14 +354,19 @@ import { parse } from 'path';
             var nowDate = this.formatDate()
             // alert(nowDate)
             var items = []
-            this.totalInCash = 0
+            // this.totalInCash = 0
+            // this.inDebt = 0
+            // this.outDebt = 0
+            this.resetNumber()
             var jsAccn = {
                 date: "",
                 name: "",
                 price: "",
                 remark: "",
                 time: "",
-                key: ""
+                key: "",
+                type: "",
+                status: ""
             }
             var sortItems = []
                 readRef.on('value', (snapshot) => {
@@ -360,7 +378,9 @@ import { parse } from 'path';
                             price: childSnapshot.val().price,
                             remark: childSnapshot.val().remark,
                             time: childSnapshot.val().time,
-                            key: childSnapshot.key      
+                            type: this.previewType(childSnapshot.val().type),
+                            key: childSnapshot.key,
+                            status: childSnapshot.val().status       
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)

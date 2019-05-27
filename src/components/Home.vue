@@ -76,7 +76,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+          <td :class="dealStatus(props.item.status)"  class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -201,7 +201,8 @@ import firebase from '../firebase'
         time: "",
         key: "",
         type: "",
-        url: ""
+        url: "",
+        status: ""
       }
       var sortItems = []
       readRef.on('value', (snapshot) => {
@@ -215,7 +216,8 @@ import firebase from '../firebase'
             time: childSnapshot.val().time,
             type: this.previewType(childSnapshot.val().type),
             key: childSnapshot.key,
-            url: childSnapshot.val().url     
+            url: childSnapshot.val().url,
+            status: childSnapshot.val().status     
           }
           items.push(jsAccn)
           this.myData = items
@@ -384,6 +386,13 @@ import firebase from '../firebase'
       formatPrice(price){
         var p = price
         return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      },
+      dealStatus(status){
+        if(status == 'income'){
+            return 'green--text'
+        }else if(status == 'outcome'){
+            return 'red--text'
+        }
       }
   },
   computed: {
