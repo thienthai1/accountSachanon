@@ -30,11 +30,12 @@
   <v-app v-else dark>
   <v-navigation-drawer
       v-model="drawer"
-      permanent
-      absolute
+      touchless="true"
+      permanent="false"
       :mini-variant.sync="mini"
       app clipped-left
       dark
+      disable-resize-watcher="true"
     >
       <v-toolbar flat class="transparent">
         <v-list class="pa-0">

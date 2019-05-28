@@ -66,7 +66,7 @@
             <td>{{ props.item.date }}</td>
             <td class="text-xs-left">{{ props.item.time }}</td>
             <td class="text-xs-left">{{ props.item.name }}</td>
-            <td :class="dealStatus(props.item.status)" class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+            <td :class="dealStatus(props.item.status,props.item.type)" class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
             <td class="text-xs-left">{{ props.item.type }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -100,22 +100,23 @@
         <h3 class="white--text mr-3 text-xs-right mt-2">เหลือเงินสด: {{ formatPrice(remainCash) }} บาท</h3>
         <v-dialog
             v-model="showPicDia"
-            width="100%"
+            max-width="800px"
         >
-            <v-card>
-            <v-card-text class="justify-center" >
-                <img :src=receiptPic />
-            </v-card-text>
-            <v-card-actions>
-                <v-btn
-                color="green darken-1"
-                flat="flat"
-                @click="showPicDia = false"
-                >
-                ตกลง
-                </v-btn>
-            </v-card-actions>        
+        <v-layout justify-center>
+            <v-flex>
+            <v-card max-width="800px">
+                        <img :src=receiptPic />
+                        <v-card-actions>
+                        <v-btn
+                            color="green darken-1"
+                            @click="showPicDia = false"
+                        >
+                            ตกลง
+                        </v-btn>
+                        </v-card-actions> 
             </v-card>
+            </v-flex>
+            </v-layout>
         </v-dialog>
     </v-container>
 </template>
@@ -292,11 +293,19 @@ import { parse } from 'path';
             this.inDebt = 0,
             this.outDebt = 0
         },
-        dealStatus(status){
+        dealStatus(status,type){
             if(status == 'income'){
+                if(type == 'ยังไม่จ่าย'){
+                return 'yellow--text'
+                }else{
                 return 'green--text'
+                }
             }else if(status == 'outcome'){
+                if(type == 'ยังไม่จ่าย'){
+                return 'yellow--text'
+                }else{
                 return 'red--text'
+                }
             }
         }
     },
@@ -332,7 +341,8 @@ import { parse } from 'path';
                             time: childSnapshot.val().time,
                             type: this.previewType(childSnapshot.val().type),
                             key: childSnapshot.key,
-                            status: childSnapshot.val().status      
+                            status: childSnapshot.val().status,
+                            url: childSnapshot.val().url      
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
@@ -380,7 +390,8 @@ import { parse } from 'path';
                             time: childSnapshot.val().time,
                             type: this.previewType(childSnapshot.val().type),
                             key: childSnapshot.key,
-                            status: childSnapshot.val().status       
+                            status: childSnapshot.val().status,
+                            url: childSnapshot.val().url,       
                         }
                         if(this.dateCheck(childSnapshot.val().date)){
                             items.push(jsAccn)
