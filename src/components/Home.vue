@@ -127,22 +127,23 @@
       </v-dialog>
       <v-dialog
         v-model="showPicDia"
-        width="100%"
+        max-width="800px"
       >
-        <v-card>
-          <v-card-text class="justify-center" >
-            <img :src=receiptPic />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="green darken-1"
-              flat="flat"
-              @click="showPicDia = false"
-            >
-              ตกลง
-            </v-btn>
-          </v-card-actions>        
-        </v-card>
+      <v-layout justify-center>
+        <v-flex>
+          <v-card max-width="800px">
+                    <img :src=receiptPic />
+                    <v-card-actions>
+                      <v-btn
+                        color="green darken-1"
+                        @click="showPicDia = false"
+                      >
+                        ตกลง
+                      </v-btn>
+                    </v-card-actions> 
+          </v-card>
+        </v-flex>
+        </v-layout>
       </v-dialog>
     </v-container>
 </template>
@@ -271,6 +272,7 @@ import firebase from '../firebase'
               var myUrl = 'my url'
               thisRef.put(file).then((snapshot) => {
                   console.log('Uploaded a blob or file!');
+              }).then( () => {
                   thisRef.getDownloadURL().then( (url) => {
                       myUrl = url
                       console.log(url);
@@ -295,7 +297,7 @@ import firebase from '../firebase'
                       url: ''
                     })
                   })
-              });
+              })
             }else{
                   readRef.push().set({
                     date: myDate,
@@ -325,22 +327,23 @@ import firebase from '../firebase'
               var myUrl = 'my url'
               thisRef.put(file).then(function(snapshot) {
                   console.log('Uploaded a blob or file!');
-              });
-              thisRef.getDownloadURL().then( (url) => {
-                  myUrl = url
-                  console.log(url);
-                  console.log('myUrl ' + myUrl)
-                  var readRef = firebase.database().ref("Outin/"+this.editedIndex)
-                  readRef.update({
-                    name: this.editedItem.name,
-                    price: this.editedItem.price,
-                    remark: this.editedItem.remark,
-                    type: this.editedItem.type,
-                    url: myUrl,
-                    status: this.editedItem.status 
-                  })
-                  this.dialog = false
-                  this.dialog2 = true
+              }).then( () => {
+                thisRef.getDownloadURL().then( (url) => {
+                    myUrl = url
+                    console.log(url);
+                    console.log('myUrl ' + myUrl)
+                    var readRef = firebase.database().ref("Outin/"+this.editedIndex)
+                    readRef.update({
+                      name: this.editedItem.name,
+                      price: this.editedItem.price,
+                      remark: this.editedItem.remark,
+                      type: this.editedItem.type,
+                      url: myUrl,
+                      status: this.editedItem.status 
+                    })
+                    this.dialog = false
+                    this.dialog2 = true
+                })
               })
             }else{
                   var readRef = firebase.database().ref("Outin/"+this.editedIndex)
