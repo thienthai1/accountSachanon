@@ -76,7 +76,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td :class="dealStatus(props.item.status)"  class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+          <td :class="dealStatus(props.item.status,props.item.type)"  class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -390,11 +390,19 @@ import firebase from '../firebase'
         var p = price
         return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       },
-      dealStatus(status){
+      dealStatus(status,type){
         if(status == 'income'){
-            return 'green--text'
+            if(type == 'ยังไม่จ่าย'){
+              return 'yellow--text'
+            }else{
+              return 'green--text'
+            }
         }else if(status == 'outcome'){
-            return 'red--text'
+            if(type == 'ยังไม่จ่าย'){
+              return 'yellow--text'
+            }else{
+              return 'red--text'
+            }
         }
       }
   },
