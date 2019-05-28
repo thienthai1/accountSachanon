@@ -40,7 +40,7 @@
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <img src="https://cdn.ndtv.com/tech/images/gadgets/pikachu_hi_pokemon.jpg?output-quality=80">
+              <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/marijuana-leaf.jpg?itok=SplzNPY-">
             </v-list-tile-avatar>
 
             <v-list-tile-content>
