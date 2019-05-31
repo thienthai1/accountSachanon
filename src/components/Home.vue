@@ -6,9 +6,6 @@
           <v-btn v-on="on" class="green darken-3" small>+ สร้างรายการ</v-btn>
         </template>
         <v-card>
-            <!-- <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-            </v-card-title> -->
               <v-toolbar dark color="grey darken-3">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -76,7 +73,7 @@
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.time }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td :class="dealStatus(props.item.status)"  class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+          <td :class="dealStatus(props.item.status,props.item.type)"  class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
@@ -390,12 +387,13 @@ import firebase from '../firebase'
         var p = price
         return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       },
-      dealStatus(status){
-        if(status == 'income'){
+      dealStatus(status, type){
+        if(status == 'income' && type !== 'debt'){
             return 'green--text'
-        }else if(status == 'outcome'){
+        }else if(status == 'outcome' && type !== 'debt'){
             return 'red--text'
         }
+
       }
   },
   computed: {
