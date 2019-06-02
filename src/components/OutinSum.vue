@@ -223,13 +223,29 @@ import { parse } from 'path';
             var day = parseInt(myDate.substr(0,2))
             var month = parseInt(myDate.substr(3,2))
             var year = parseInt(myDate.substr(6))
-            if( year >= parseInt(this.formatDate2().substr(6))  && year <= parseInt(this.formatDate().substr(6)) ){
-                if( month >= parseInt(this.formatDate2().substr(3,2))  && month <= parseInt(this.formatDate().substr(3,2)) ){
-                    if( day >= parseInt(this.formatDate2().substr(0,2))  && day <= parseInt(this.formatDate().substr(0,2)) ){
-                        return true
-                    }
+
+            if(parseInt(this.formatDate2().substr(6)) < parseInt(this.formatDate().substr(6))){
+                if(month >= parseInt(this.formatDate2().substr(3,2)) && year < parseInt(this.formatDate().substr(6))){
+                    return true
+                }else if(month <= parseInt(this.formatDate().substr(3,2)) && year == parseInt(this.formatDate().substr(6))){
+                    return true
+                }  
+            }
+
+            if(parseInt(this.formatDate2().substr(3,2)) < parseInt(this.formatDate().substr(3,2))){
+                if(day >= parseInt(this.formatDate2().substr(0,2)) && month < parseInt(this.formatDate().substr(3,2))){
+                    return true
+                }else if(day <= parseInt(this.formatDate().substr(0,2)) && month == parseInt(this.formatDate().substr(3,2))){
+                    return true
                 }
             }
+
+            if(parseInt(this.formatDate2().substr(3,2)) == parseInt(this.formatDate().substr(3,2))){
+                if( day >= parseInt(this.formatDate2().substr(0,2))  && day <= parseInt(this.formatDate().substr(0,2)) ){
+                    return true
+                }                
+            }
+
             return false
         },
         openPic(pic){
