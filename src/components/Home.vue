@@ -387,11 +387,19 @@ import firebase from '../firebase'
         var p = price
         return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       },
-      dealStatus(status, type){
-        if(status == 'income' && type !== 'debt'){
-            return 'green--text'
-        }else if(status == 'outcome' && type !== 'debt'){
-            return 'red--text'
+      dealStatus(status,type){
+        if(status == 'income'){
+            if(type == 'ยังไม่จ่าย'){
+              return 'yellow--text'
+            }else{
+              return 'green--text'
+            }
+        }else if(status == 'outcome'){
+            if(type == 'ยังไม่จ่าย'){
+              return 'yellow--text'
+            }else{
+              return 'red--text'
+            }
         }
 
       }
