@@ -6,9 +6,6 @@
           <v-btn v-on="on" class="green darken-3" small>+ สร้างรายการ</v-btn>
         </template>
         <v-card>
-            <!-- <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-            </v-card-title> -->
               <v-toolbar dark color="grey darken-3">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -404,6 +401,7 @@ import firebase from '../firebase'
               return 'red--text'
             }
         }
+
       }
   },
   computed: {
