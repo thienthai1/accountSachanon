@@ -13,16 +13,22 @@
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs12 sm6 md4>
+                  <v-flex xs12 sm4 md4>
                     <v-text-field 
                     v-model="editedItem.products" 
                     label="รายการ">
                     </v-text-field>
                   </v-flex>
-                  <v-flex xs12 sm6 md4>
+                  <v-flex xs12 sm4 md4>
                     <v-text-field 
                     v-model="editedItem.quantity" 
                     label="จำนวน">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm4 md4>
+                    <v-text-field 
+                    v-model="editedItem.price" 
+                    label="ราคา">
                     </v-text-field>
                   </v-flex>
                 </v-layout>
@@ -44,9 +50,9 @@
         expand = "true"
       >
         <template v-slot:items="props">
-          <td>{{ props.item.key }}</td>
           <td class="text-xs-left">{{ props.item.products }}</td>
           <td class="text-xs-left">{{ props.item.quantity }}</td>
+          <td class="text-xs-left">{{ props.item.price }}</td>
           <td class="text-xs-left">
             <v-icon
               small
@@ -108,19 +114,15 @@ import firebase from '../firebase'
        },
        editedIndex: -1,
        headers: [
-          {
-            text: 'รหัส',
-            align: 'left',
-            sortable: false,
-            value: 'id',
-          },
-          { text: 'รายการ', value: 'products', sortable: false },
+          { text: 'รายการ', value: 'products', sortable: true },
           { text: 'จำนวน', value: 'quantity', sortable: false },
+          { text: 'ราคา', value: 'price', sortable: false },
           { text: '', sortable: false}
         ],
         editedItem: {
           products: '',
           quantity: '',
+          price: '',
           key: ''
         }
     }
@@ -131,6 +133,7 @@ import firebase from '../firebase'
       var jsAccn = {
           key: '',
           products: '',
+          price: '',
           quantity: ''
       }
       var sortItems = []
@@ -140,7 +143,8 @@ import firebase from '../firebase'
           jsAccn = {
             key: childSnapshot.key,
             products: childSnapshot.val().products,
-            quantity: childSnapshot.val().quantity,    
+            quantity: childSnapshot.val().quantity,
+            price: childSnapshot.val().price,    
           }
           items.push(jsAccn)
           this.myData = items
@@ -159,7 +163,8 @@ import firebase from '../firebase'
         setTimeout(() => {
           this.editedItem = Object.assign({}, {
           products: '',
-          quantity: ''
+          quantity: '',
+          price: ''
         })
           this.editedIndex = -1
         }, 300)
@@ -171,6 +176,7 @@ import firebase from '../firebase'
         myref.on('value', (snapshot) => {
           this.editedItem.products = snapshot.val().products
           this.editedItem.quantity = snapshot.val().quantity
+          this.editedItem.price = snapshot.val().price
         })
         
       },
@@ -178,20 +184,23 @@ import firebase from '../firebase'
         if(this.editedIndex == -1){
               var readRef = firebase.database().ref("Stocks")
               readRef.push().set({
-                  products: this.editItem.products,
+                  products: this.editedItem.products,
                   quantity: this.editedItem.quantity,
+                  price: this.editedItem.price,
               })
               this.dialog = false
               this.dialog2 = true
               this.editedItem = Object.assign({}, {
                 products: '',
                 quantity: '',
-                })
+                price: ''
+              })
         }else{
             var readRef = firebase.database().ref("Stocks/"+this.editedIndex)
             readRef.update({
-                    products: this.editItem.products,
+                    products: this.editedItem.products,
                     quantity: this.editedItem.quantity,
+                    price: this.editedItem.price
             })
             this.dialog = false
             this.dialog2 = true
