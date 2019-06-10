@@ -9,9 +9,9 @@
             {{ n }}
           </v-tab>
       </v-tabs>
-      <h4>{{ myTabs[currentItem] }}</h4>
       <v-divider class="my-1"></v-divider>
-      <v-dialog v-model="dialog" max-width="1000px">
+      <template v-if="myTabs[currentItem] == 'รายการสินค้า'">
+<v-dialog v-model="dialog" max-width="1000px">
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" class="green darken-3 mb-3" small>+ สร้างรายการ</v-btn>
         </template>
@@ -92,6 +92,7 @@
           </td>
         </template>
       </v-data-table>
+      </template>
       <v-dialog
         v-model="dialog2"
         max-width="290"

@@ -116,7 +116,7 @@ export default {
         items: [
         { title: 'รายรับรายจ่าย', url: {path:'/home', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'รายการซื้อ', url: {path:'', query: {usr:this.$route.query.usr} }, drop: false},
-        { title: 'รายการขาย', url: {path:'', query: {usr:this.$route.query.usr} }, drop: false},
+        { title: 'รายการขาย', url: {path:'/sell', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'สต๊อกสินค้า', url: {path:'/stock', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'สรุปยอด', url: {path:'/report', query: {usr:this.$route.query.usr} }, drop: false},
         { title: 'ออกจากระบบ', url: {path:'/'}}
