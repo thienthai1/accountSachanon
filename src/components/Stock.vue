@@ -1,9 +1,19 @@
 <template>
     <v-container>
       <h1>สต็อคสินค้า</h1>
-      <v-dialog v-model="dialog" max-width="1000px">
+      <v-tabs class="mt-3" v-model="currentItem">
+          <v-tab
+            v-for="n in myTabs"
+            :key="n"
+          >
+            {{ n }}
+          </v-tab>
+      </v-tabs>
+      <v-divider class="my-1"></v-divider>
+      <template v-if="myTabs[currentItem] == 'รายการสินค้า'"> <!--content tab -->
+        <v-dialog v-model="dialog" max-width="1000px">
         <template v-slot:activator="{ on }">
-          <v-btn v-on="on" class="green darken-3" small>+ สร้างรายการ</v-btn>
+          <v-btn v-on="on" class="green darken-3 mb-3" small>+ สร้างรายการ</v-btn>
         </template>
         <v-card>
               <v-toolbar dark color="grey darken-3">
@@ -51,7 +61,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-divider class="my-3"></v-divider>
       <v-data-table
         :pagination.sync="pagination"
         :headers="headers"
@@ -83,6 +92,7 @@
           </td>
         </template>
       </v-data-table>
+      </template> <!--content tab -->
       <v-dialog
         v-model="dialog2"
         max-width="290"
@@ -111,6 +121,11 @@ import firebase from '../firebase'
   name: 'Home',
   data () {
     return {
+       currentItem: null,
+        tab: null,
+        myTabs: [
+          'รายการสินค้า','ประวัติ'
+        ],
        itemType: ['ผ้าเช็ดมือ', 'ผ้าเช็ดหน้า', 'ผ้าอเนกประสงค์', 'ผ้าเช็ดตัว','ผ้าเช็ดเท้า','ผ้าหลา','ผ้าห่ม','ผ้าเช็ดผม','ผ้าเย็น'],
        testdat: {
          moo: "wrah"
