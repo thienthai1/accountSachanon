@@ -23,12 +23,55 @@
               </v-toolbar>
             <v-card-text>
               <v-container grid-list-md>
+                <v-layout>
+                      <v-switch
+                        :label="switch1 === false ? 'ลูกค้าเก่า' : 'ลูกค้าไหม่'"
+                        v-model="switch1"
+                        color="green"
+                      ></v-switch>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs12 sm6 md6>
+                    <v-text-field 
+                    v-model="customer.name" 
+                    label="ชื้อผู้ซื้อ">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md6>
+                    <v-text-field 
+                    v-model="customer.call" 
+                    label="เบอร์โทรผู้ซื้อ"
+                    disabled="true"
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs12 sm12 md12>
+                    <v-text-field 
+                    v-model="customer.address" 
+                    label="ที่อยู่ผู้ซื้อ"
+                    disabled="true"
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs12 sm12 md12>
+                    <v-text-field 
+                    v-model="customer.tax" 
+                    label="เลขที่ผู้เสียภาษี"
+                    disabled="true"
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
                 <v-layout wrap v-for="n in totalList">
                   <v-flex xs12 sm4 md4 style="padding-top:5px">
                   <v-select
                       :items="dataItems"
                       v-model="e11"
-                      label="Select"
+                      label="รายการสินค้า"
                       item-text="name"
                       item-value="name"
                       chips
@@ -58,16 +101,18 @@
                   <v-flex xs12 sm4 md4>
                     <v-text-field 
                     v-model="editedItem.price" 
-                    label="ราคา">
+                    label="ราคา"
+                    disabled="true"
+                    >
                     </v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout>
                       <v-btn @click="addItem()" flat color="green">
-                        เพิ่มรายการ
+                        + เพิ่มรายการ
                       </v-btn>
                       <v-btn @click="removeItem()" flat color="red">
-                        ลดรายการ
+                        - ลดรายการ
                       </v-btn>
                 </v-layout>
               </v-container>
@@ -107,17 +152,24 @@
   name: 'Sell',
   data () {
     return {
+        switch1: true,
+        customer: {
+          name:'ช่อ',
+          call:'08181818811',
+          address:'99/414 เพลสแอนด์พาร์ค',
+          tax: 'A00E990172'
+        },
         e11: [],
         dataItems: [
-          { header: 'ผ้าเช็ดตัว' },
-          { divider: true },
-          { header: 'ผ้าเช็ดเท้า' },
-          { divider: true },
-          { header: 'ผ้าอเนกประสงค์' },
-          { divider: true },
-          { header: 'ผ้าหลา' },
-          { divider: true },
-          { header: 'ผ้าเย็น' },
+          // { header: 'ผ้าเช็ดตัว' },
+          // { divider: true },
+          // { header: 'ผ้าเช็ดเท้า' },
+          // { divider: true },
+          // { header: 'ผ้าอเนกประสงค์' },
+          // { divider: true },
+          // { header: 'ผ้าหลา' },
+          // { divider: true },
+          // { header: 'ผ้าเย็น' },
         ],
       selected: 'A',
       options: {
