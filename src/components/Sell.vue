@@ -28,17 +28,18 @@
                         color="green"
                       ></v-switch>
                 </v-layout>
-                <template v-if="switch1==false">
+               <template v-if="switch1==false"><!--ลูกค้าเก่า-->
                         <v-layout>
                         <v-flex xs12 sm6 md6>
                           <v-select
-                            :items="items"
+                            :items="getListCustomer()"
                             label="ชื่อผู้ซื้อ"
+                            v-model="customerSelect"
                           ></v-select>
                         </v-flex>
                         <v-flex xs12 sm6 md6>
                           <v-text-field 
-                          v-model="customer.call" 
+                          v-model="customerDetail.phone" 
                           label="เบอร์โทรผู้ซื้อ"
                           disabled="true"
                           >
@@ -48,7 +49,7 @@
                       <v-layout>
                         <v-flex xs12 sm12 md12>
                           <v-text-field 
-                          v-model="customer.address" 
+                          v-model="customerDetail.address" 
                           label="ที่อยู่ผู้ซื้อ"
                           disabled="true"
                           >
@@ -58,7 +59,7 @@
                       <v-layout>
                         <v-flex xs12 sm12 md12>
                           <v-text-field 
-                          v-model="customer.tax" 
+                          v-model="customerDetail.tax" 
                           label="เลขที่ผู้เสียภาษี"
                           disabled="true"
                           >
@@ -102,49 +103,11 @@
                         </v-flex>
                       </v-layout>
                 </template>
-                <!-- <v-layout v-else>
-                        <v-layout>
-                        <v-flex xs12 sm6 md6>
-                          <v-select
-                            :items="items"
-                            label="ชื่อผู้ซื้อ"
-                          ></v-select>
-                        </v-flex>
-                        <v-flex xs12 sm6 md6>
-                          <v-text-field 
-                          v-model="customer.call" 
-                          label="เบอร์โทรผู้ซื้อ"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customer.address" 
-                          label="ที่อยู่ผู้ซื้อ"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customer.tax" 
-                          label="เลขที่ผู้เสียภาษี"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>                 
-                </v-layout> -->
                 <v-layout v-for="n in totalList">
                   <v-flex xs12 sm6 md6>
                   <v-select
                       :items="dataItems"
-                      v-model="e11"
+                      v-model="prodList[n-1]"
                       label="รายการสินค้า"
                       item-text="name"
                       item-value="name"
@@ -152,7 +115,7 @@
                       class="select2"
                     >
                       <template slot="selection" slot-scope="data">
-                          <span style="font-size:15px">{{ data.item.name }}</span>
+                          <span style="font-size:15px">{{ priceSet(data.item.name,data.item.price,n-1) }}</span>
                       </template>
                       <template slot="item" slot-scope="data">
                         <template v-if="typeof data.item !== 'object'">
@@ -168,14 +131,14 @@
                   </v-flex>
                   <v-flex xs12 sm3 md3>
                     <v-text-field 
-                    v-model="editedItem.quantity" 
+                    v-model="editedItem[n-1].quantity" 
                     label="จำนวน">
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12 sm3 md3>
                     <v-text-field 
-                    v-model="editedItem.price" 
-                    label="ราคา"
+                    v-model="editedItem[n-1].price" 
+                    label="ราคาต่อหน่วย"
                     disabled="true"
                     >
                     </v-text-field>
@@ -230,7 +193,20 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
-        switch1: true,
+        customerSelect: '',
+        customerDetail: {
+          key: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: ''
+        },
+        customerList: [],
+        totalList: 1,
+        prodList: [
+          []
+        ],
+        switch1: false,
         customer: {
           name:'',
           call:'',
@@ -239,15 +215,6 @@ import firebase from '../firebase'
         },
         e11: [],
         dataItems: [
-          // { header: 'ผ้าเช็ดตัว' },
-          // { divider: true },
-          // { header: 'ผ้าเช็ดเท้า' },
-          // { divider: true },
-          // { header: 'ผ้าอเนกประสงค์' },
-          // { divider: true },
-          // { header: 'ผ้าหลา' },
-          // { divider: true },
-          // { header: 'ผ้าเย็น' },
         ],
       selected: 'A',
       options: {
@@ -260,12 +227,11 @@ import firebase from '../firebase'
         ]
       },
       editedIndex: -1,
-      totalList: 1,
       dialog: false,
       currentItem: null,
       tab: null,
       myTabs: [
-        'รายการขาย','รายการเสนอราคา'
+        'รายการขาย','รายการเสนอราคา','รายชื่อลูกค้า'
       ],
       headers: [
         {
@@ -280,13 +246,12 @@ import firebase from '../firebase'
         { text: 'Protein (g)', value: 'protein' },
         { text: 'Iron (%)', value: 'iron' }
       ],
-      editedItem: {
-        products: '',
+      editedItem: [{
         quantity: '',
         price: '',
         type: '',
         key: ''
-      },
+      }],
       stocksItem: ["moo"]
     }
   },
@@ -332,65 +297,135 @@ import firebase from '../firebase'
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
              if(this.stocksItem[j].type == "ผ้าเช็ดตัว"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              }
            }else if(i == 1){
              if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }else if(i == 2){
              if(this.stocksItem[j].type == "ผ้าอเนกประสงค์"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }else if(i == 3){
              if(this.stocksItem[j].type == "ผ้าหลา"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }else if(i == 4){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }else if(i == 5){
              if(this.stocksItem[j].type == "ผ้าเช็ดหน้า"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }else if(i == 6){
              if(this.stocksItem[j].type == "ผ้าเช็ดผม"){
-               this.dataItems.push({name: this.stocksItem[j].products})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
              } 
            }
          }
          this.dataItems.push({ divider: true })
        }
     })
-    console.log(this.stocksItem[0].type)
+    readRef = firebase.database().ref("Customer")
+    var jsKeep = {
+      key: '',
+      name: '',
+      phone: '',
+      address: '',
+      tax: ''
+    }
+    items = []
+    readRef.on('value', (snapshot) => {
+      snapshot.forEach( (childSnapshot) => {
+        jsKeep = {
+          key: childSnapshot.key,
+          name: childSnapshot.val().name,
+          phone: childSnapshot.val().phone,
+          address: childSnapshot.val().address,
+          tax: childSnapshot.val().tax
+        }
+        items.push(jsKeep)
+        this.customerList = items
+      })
+    })
+
   },
   methods: {
       close () {
         this.dialog = false
+        this.customerSelect = ''
+        console.log(this.editedItem)
+        this.customerDetail = {
+          key: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: ''
+        } 
         setTimeout(() => {
-          this.editedItem = Object.assign({}, {
-          products: '',
-          quantity: '',
-          type: '',
-          price: ''
-        })
+          this.editedItem[0].quantity = ''
+          this.editedItem[0].type = ''
+          this.editedItem[0].price = ''
+          this.prodList = [[]]
           this.editedIndex = -1
           this.totalList = 1
         }, 300)
       },
       addItem () {
+        //console.log(this.prodList)
+        this.editedItem.push(
+          {
+            quantity: '',
+            price: '',
+            type: '',
+            key: ''
+          }
+        )
+        this.prodList.push([])
         this.totalList += 1
       },
       removeItem () {
-        if(this.totalList != 1){
+        if(this.totalList > 1){
+          this.prodList.pop()
+          this.editedItem.pop()
           this.totalList -= 1
         }
+      },
+      priceSet (name,price,n) {
+        this.editedItem[n].price = price
+        return name
+      },
+      getListCustomer () {
+        var i = 0
+        var items = []
+        for(i;i<this.customerList.length;i++){
+          items.push(this.customerList[i].name)
+        }
+        return items.sort()
       }
   },
   computed: {
     formTitle () {
       return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
+    },
+  },
+  watch: {
+    customerSelect: function () {
+      var i = 0
+      for(i;i<this.customerList.length;i++){
+        if(this.customerList[i].name == this.customerSelect){
+          this.customerDetail = {
+            key: this.customerList[i].key,
+            name: this.customerList[i].name,
+            address: this.customerList[i].address,
+            phone: this.customerList[i].phone,
+            tax: this.customerList[i].tax,
+          }
+        }
+      }
+      console.log(this.customerDetail)
     }
   }
 }
