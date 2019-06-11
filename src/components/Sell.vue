@@ -1,8 +1,6 @@
 <template>
     <v-container>
       <h1>รายการขาย</h1>
-  <span>{{ n }} </span>
-</div>
       <v-tabs class="mt-3" v-model="currentItem">
           <v-tab
             v-for="n in myTabs"
@@ -30,55 +28,131 @@
                         color="green"
                       ></v-switch>
                 </v-layout>
-                <v-layout>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field 
-                    v-model="customer.name" 
-                    label="ชื้อผู้ซื้อ">
-                    </v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field 
-                    v-model="customer.call" 
-                    label="เบอร์โทรผู้ซื้อ"
-                    disabled="true"
-                    >
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout>
-                  <v-flex xs12 sm12 md12>
-                    <v-text-field 
-                    v-model="customer.address" 
-                    label="ที่อยู่ผู้ซื้อ"
-                    disabled="true"
-                    >
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout>
-                  <v-flex xs12 sm12 md12>
-                    <v-text-field 
-                    v-model="customer.tax" 
-                    label="เลขที่ผู้เสียภาษี"
-                    disabled="true"
-                    >
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout wrap v-for="n in totalList">
-                  <v-flex xs12 sm4 md4 style="padding-top:5px">
+                <template v-if="switch1==false">
+                        <v-layout>
+                        <v-flex xs12 sm6 md6>
+                          <v-select
+                            :items="items"
+                            label="ชื่อผู้ซื้อ"
+                          ></v-select>
+                        </v-flex>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field 
+                          v-model="customer.call" 
+                          label="เบอร์โทรผู้ซื้อ"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.address" 
+                          label="ที่อยู่ผู้ซื้อ"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.tax" 
+                          label="เลขที่ผู้เสียภาษี"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                </template>
+                <template v-else>
+                        <v-layout>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field 
+                          v-model="customer.name" 
+                          label="ชื่อผู้ซื้อ"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field 
+                          v-model="customer.call" 
+                          label="เบอร์โทรผู้ซื้อ"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.address" 
+                          label="ที่อยู่ผู้ซื้อ"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.tax" 
+                          label="เลขที่ผู้เสียภาษี"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                </template>
+                <!-- <v-layout v-else>
+                        <v-layout>
+                        <v-flex xs12 sm6 md6>
+                          <v-select
+                            :items="items"
+                            label="ชื่อผู้ซื้อ"
+                          ></v-select>
+                        </v-flex>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field 
+                          v-model="customer.call" 
+                          label="เบอร์โทรผู้ซื้อ"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.address" 
+                          label="ที่อยู่ผู้ซื้อ"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex xs12 sm12 md12>
+                          <v-text-field 
+                          v-model="customer.tax" 
+                          label="เลขที่ผู้เสียภาษี"
+                          disabled="true"
+                          >
+                          </v-text-field>
+                        </v-flex>
+                      </v-layout>                 
+                </v-layout> -->
+                <v-layout v-for="n in totalList">
+                  <v-flex xs12 sm8 md8>
                   <v-select
                       :items="dataItems"
                       v-model="e11"
                       label="รายการสินค้า"
                       item-text="name"
                       item-value="name"
-                      chips
-                      max-height="auto"
+                      max-height="300px"
+                      class="select2"
                     >
                       <template slot="selection" slot-scope="data">
-                          {{ data.item.name }}
+                          <span style="font-size:15px">{{ data.item.name }}</span>
                       </template>
                       <template slot="item" slot-scope="data">
                         <template v-if="typeof data.item !== 'object'">
@@ -86,19 +160,19 @@
                         </template>
                         <template v-else>
                           <v-list-tile-content>
-                            <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
+                            <v-list-tile-title style="font-size:15px" v-text="data.item.name"></v-list-tile-title>
                           </v-list-tile-content>
                         </template>
                       </template>
                     </v-select>
                   </v-flex>
-                  <v-flex xs12 sm4 md4>
+                  <v-flex xs12 sm2 md2>
                     <v-text-field 
                     v-model="editedItem.quantity" 
                     label="จำนวน">
                     </v-text-field>
                   </v-flex>
-                  <v-flex xs12 sm4 md4>
+                  <v-flex xs12 sm2 md2>
                     <v-text-field 
                     v-model="editedItem.price" 
                     label="ราคา"
@@ -142,22 +216,26 @@
 </template>
 
 <style>
-.v-select__slot {
+.select2 v-select__slot {
   margin-bottom:-10px
 }
+/* .v-select__selections {
+  margin-bottom: 9px
+} */
 </style>
 
 <script>
+import firebase from '../firebase'
   export default {
   name: 'Sell',
   data () {
     return {
         switch1: true,
         customer: {
-          name:'ช่อ',
-          call:'08181818811',
-          address:'99/414 เพลสแอนด์พาร์ค',
-          tax: 'A00E990172'
+          name:'',
+          call:'',
+          address:'',
+          tax: ''
         },
         e11: [],
         dataItems: [
@@ -184,32 +262,108 @@
       editedIndex: -1,
       totalList: 1,
       dialog: false,
-       currentItem: null,
-        tab: null,
-        myTabs: [
-          'รายการขาย','รายการเสนอราคา'
-        ],
-       headers: [
-          {
-            text: 'Dessert (100g serving)',
-            align: 'left',
-            sortable: false,
-            value: 'name'
-          },
-          { text: 'Calories', value: 'calories' },
-          { text: 'Fat (g)', value: 'fat' },
-          { text: 'Carbs (g)', value: 'carbs' },
-          { text: 'Protein (g)', value: 'protein' },
-          { text: 'Iron (%)', value: 'iron' }
-        ],
-        editedItem: {
-          products: '',
-          quantity: '',
-          price: '',
-          type: '',
-          key: ''
-        }
+      currentItem: null,
+      tab: null,
+      myTabs: [
+        'รายการขาย','รายการเสนอราคา'
+      ],
+      headers: [
+        {
+          text: 'Dessert (100g serving)',
+          align: 'left',
+          sortable: false,
+          value: 'name'
+        },
+        { text: 'Calories', value: 'calories' },
+        { text: 'Fat (g)', value: 'fat' },
+        { text: 'Carbs (g)', value: 'carbs' },
+        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Iron (%)', value: 'iron' }
+      ],
+      editedItem: {
+        products: '',
+        quantity: '',
+        price: '',
+        type: '',
+        key: ''
+      },
+      stocksItem: ["moo"]
     }
+  },
+  mounted: function () {
+    var readRef = firebase.database().ref("Stocks")
+    var items = []
+    var jsKeep = {
+      key: '',
+      price: '',
+      products: '',
+      quantity: '',
+      type: ''
+    }
+    readRef.on('value', (snapshot) => {
+       snapshot.forEach( (childSnapshot) => {
+         jsKeep = {
+           key: childSnapshot.key,
+           price: childSnapshot.val().price,
+           products: childSnapshot.val().products,
+           quantity: childSnapshot.val().quantity,
+           type: childSnapshot.val().type
+         }
+         items.push(jsKeep)
+         this.stocksItem = items
+       })
+       var i,j
+       for(i = 0;i<7;i++){
+         if(i == 0){
+            this.dataItems.push({header: "ผ้าเช็ดตัว"})
+         }else if(i == 1){
+            this.dataItems.push({header: "ผ้าเช็ดเท้า"})
+         }else if(i == 2){
+            this.dataItems.push({header: "ผ้าเช็ดเอนกประสงค์"})          
+         }else if(i == 3){
+            this.dataItems.push({header: "ผ้าหลา"})           
+         }else if(i == 4){
+            this.dataItems.push({header: "ผ้าเย็น"})           
+         }else if(i == 5){
+            this.dataItems.push({header: "ผ้าเช็ดหน้า"})           
+         }else if(i == 6){
+            this.dataItems.push({header: "ผ้าเช็ดผม"})           
+         }
+         for(j = 0;j < this.stocksItem.length;j++){
+           if(i == 0){
+             if(this.stocksItem[j].type == "ผ้าเช็ดตัว"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             }
+           }else if(i == 1){
+             if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }else if(i == 2){
+             if(this.stocksItem[j].type == "ผ้าเช็ดเอนกประสงค์"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }else if(i == 3){
+             if(this.stocksItem[j].type == "ผ้าหลา"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }else if(i == 4){
+             if(this.stocksItem[j].type == "ผ้าเย็น"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }else if(i == 5){
+             if(this.stocksItem[j].type == "ผ้าเช็ดหน้า"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }else if(i == 6){
+             if(this.stocksItem[j].type == "ผ้าเช็ดผม"){
+               this.dataItems.push({name: this.stocksItem[j].products})
+             } 
+           }
+         }
+         this.dataItems.push({ divider: true })
+       }
+    })
+    console.log(this.stocksItem[0].type)
   },
   methods: {
       close () {
@@ -238,6 +392,6 @@
     formTitle () {
       return this.editedIndex === -1 ? 'เพิ่มรายการไหม่' : 'แก้ไขรายการ'
     }
-  },
+  }
 }
 </script>
