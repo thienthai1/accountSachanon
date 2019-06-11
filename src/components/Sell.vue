@@ -141,7 +141,7 @@
                       </v-layout>                 
                 </v-layout> -->
                 <v-layout v-for="n in totalList">
-                  <v-flex xs12 sm8 md8>
+                  <v-flex xs12 sm6 md6>
                   <v-select
                       :items="dataItems"
                       v-model="e11"
@@ -166,13 +166,13 @@
                       </template>
                     </v-select>
                   </v-flex>
-                  <v-flex xs12 sm2 md2>
+                  <v-flex xs12 sm3 md3>
                     <v-text-field 
                     v-model="editedItem.quantity" 
                     label="จำนวน">
                     </v-text-field>
                   </v-flex>
-                  <v-flex xs12 sm2 md2>
+                  <v-flex xs12 sm3 md3>
                     <v-text-field 
                     v-model="editedItem.price" 
                     label="ราคา"
@@ -319,7 +319,7 @@ import firebase from '../firebase'
          }else if(i == 1){
             this.dataItems.push({header: "ผ้าเช็ดเท้า"})
          }else if(i == 2){
-            this.dataItems.push({header: "ผ้าเช็ดเอนกประสงค์"})          
+            this.dataItems.push({header: "ผ้าอเนกประสงค์"})          
          }else if(i == 3){
             this.dataItems.push({header: "ผ้าหลา"})           
          }else if(i == 4){
@@ -339,7 +339,7 @@ import firebase from '../firebase'
                this.dataItems.push({name: this.stocksItem[j].products})
              } 
            }else if(i == 2){
-             if(this.stocksItem[j].type == "ผ้าเช็ดเอนกประสงค์"){
+             if(this.stocksItem[j].type == "ผ้าอเนกประสงค์"){
                this.dataItems.push({name: this.stocksItem[j].products})
              } 
            }else if(i == 3){
