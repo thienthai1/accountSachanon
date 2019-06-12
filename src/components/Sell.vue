@@ -183,7 +183,7 @@
             <v-icon
               small
               class="mr-2"
-              @click="editItem(props.item.key,props.item.myitems)"
+              @click="editItem(props.item.key,props.item.myitems,props.item.keyCustomer)"
               v-ripple
             >
               edit
@@ -405,14 +405,16 @@ import firebase from '../firebase'
       items = []
       snapshot.forEach( (childSnapshot) => {
         jsAccn = {
-          key: childSnapshot.val().key,
+          // key: childSnapshot.val().key,
+          key: childSnapshot.key,
+          keyCustomer: childSnapshot.val().key,
           name: childSnapshot.val().name,
           phone: childSnapshot.val().phone,
           tax: childSnapshot.val().tax,
           address: childSnapshot.val().address,
           date: childSnapshot.val().date,
           myitems: childSnapshot.val().items,
-          total: 100    
+          total: this.calTotal(childSnapshot.val().items)    
         }
         items.push(jsAccn)
         this.dataOrders = items
@@ -440,7 +442,7 @@ import firebase from '../firebase'
                 tax: this.customerDetail.tax,
                 address: this.customerDetail.address,
                 date: myDate,
-                items: this.editedItem
+                items: this.editedItem,
               })
               this.dialog = false
               this.dialog2 = true
@@ -502,7 +504,7 @@ import firebase from '../firebase'
             name: ''
           }
         )
-        this.prodList.push([])
+        // this.prodList.push([])
         this.totalList += 1
       },
       removeItem () {
@@ -515,7 +517,7 @@ import firebase from '../firebase'
       priceSet (name,price,n) {
         this.editedItem[n].price = price
         this.editedItem[n].name = name
-        console.log(this.editedItem)
+        // console.log(this.editedItem)
         return name
       },
       getListCustomer () {
@@ -526,12 +528,12 @@ import firebase from '../firebase'
         }
         return items.sort()
       },
-      editItem (item,myItems) {
+      editItem (item,myItems,key) {
         this.editedIndex = item
         this.dialog = true
         var i = 0
         for(i;i<this.customerList.length;i++){
-          if(this.customerList[i].key == item){
+          if(this.customerList[i].key == key){
             this.customerDetail = {
               key: this.customerList[i].key,
               name: this.customerList[i].name,
@@ -544,7 +546,15 @@ import firebase from '../firebase'
         }
       this.editedItem = myItems
       this.totalList = myItems.length
-    }
+      },
+      calTotal (items) {
+        var total = 0
+        var i
+        for(i = 0;i<items.length;i++){
+          total += items[i].quantity * items[i].price
+        }
+        return total
+      }
   },
   computed: {
     formTitle () {
