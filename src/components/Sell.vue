@@ -190,7 +190,7 @@
             </v-icon>
             <v-icon
               small
-              @click="deleteItem(props.item.key,props.item.url)"
+              @click="deleteItem(props.item.key)"
               v-ripple
             >
               delete
@@ -487,10 +487,11 @@ import firebase from '../firebase'
           tax: ''
         } 
         setTimeout(() => {
-          this.editedItem[0].quantity = ''
-          this.editedItem[0].type = ''
-          this.editedItem[0].price = ''
-          this.prodList = [[]]
+          this.editedItem = [{
+              quantity: '',
+              price: '',
+              name: ''
+          }]
           this.editedIndex = -1
           this.totalList = 1
         }, 300)
@@ -509,7 +510,6 @@ import firebase from '../firebase'
       },
       removeItem () {
         if(this.totalList > 1){
-          this.prodList.pop()
           this.editedItem.pop()
           this.totalList -= 1
         }
@@ -530,7 +530,7 @@ import firebase from '../firebase'
       },
       editItem (item,myItems,key) {
         this.editedIndex = item
-        this.dialog = true
+        this.dialog = true 
         var i = 0
         for(i;i<this.customerList.length;i++){
           if(this.customerList[i].key == key){
@@ -545,6 +545,7 @@ import firebase from '../firebase'
           }
         }
       this.editedItem = myItems
+      console.log(myItems.length)
       this.totalList = myItems.length
       },
       calTotal (items) {
@@ -554,6 +555,12 @@ import firebase from '../firebase'
           total += items[i].quantity * items[i].price
         }
         return total
+      },
+      deleteItem(key){
+        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
+        firebase.database().ref("SellOrders/" + key).remove().then( () => {
+          this.dialog2 = true
+        })
       }
   },
   computed: {
