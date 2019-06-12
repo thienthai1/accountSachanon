@@ -107,7 +107,7 @@
                   <v-flex xs12 sm6 md6>
                   <v-select
                       :items="dataItems"
-                      v-model="prodList[n-1]"
+                      v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
                       item-text="name"
                       item-value="name"
@@ -163,18 +163,61 @@
       </v-dialog>
       <v-data-table
         :headers="headers"
-        :items="desserts"
+        :items="dataOrders"
         class="elevation-1"
       >
         <template v-slot:items="props">
-          <td>{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.calories }}</td>
-          <td class="text-xs-right">{{ props.item.fat }}</td>
-          <td class="text-xs-right">{{ props.item.carbs }}</td>
-          <td class="text-xs-right">{{ props.item.protein }}</td>
-          <td class="text-xs-right">{{ props.item.iron }}</td>
+          <td>{{ props.item.date }}</td>
+          <td class="text-xs-left">{{ props.item.name }}</td>
+          <td class="text-xs-left">{{ props.item.total }}</td>
+          <td class="text-xs-left">
+
+            <v-icon
+              small
+              class="mr-2"
+              @click="openPic(props.item.url)"
+              v-ripple
+            >
+              print
+            </v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              @click="editItem(props.item.key,props.item.myitems)"
+              v-ripple
+            >
+              edit
+            </v-icon>
+            <v-icon
+              small
+              @click="deleteItem(props.item.key,props.item.url)"
+              v-ripple
+            >
+              delete
+            </v-icon>
+
+          </td>
         </template>
       </v-data-table>
+      <v-dialog
+        v-model="dialog2"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-text>
+            สำเร็จ
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="green darken-1"
+              flat="flat"
+              @click="dialog2 = false"
+            >
+              ตกลง
+            </v-btn>
+          </v-card-actions>        
+        </v-card>
+      </v-dialog>
     </v-container>
 </template>
 
@@ -193,6 +236,8 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
+        dataOrders: [],
+        dialog2: false,
         customerSelect: '',
         customerDetail: {
           key: '',
@@ -203,9 +248,6 @@ import firebase from '../firebase'
         },
         customerList: [],
         totalList: 1,
-        prodList: [
-          []
-        ],
         switch1: false,
         customer: {
           name:'',
@@ -235,22 +277,19 @@ import firebase from '../firebase'
       ],
       headers: [
         {
-          text: 'Dessert (100g serving)',
-          align: 'left',
-          sortable: false,
-          value: 'name'
+          text: 'วันที่',
+          value: 'date',
+          sortable: false
         },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        { text: 'Iron (%)', value: 'iron' }
+        { text: 'ชื่อลูกค้า', value: 'name',sortable: false },
+        { text: 'ราคารวม', value: 'total',sortable: false },
+        { text: 'สินค้า', value: 'items',sortable: false },
+        { text: '', sortable: false }
       ],
       editedItem: [{
         quantity: '',
         price: '',
-        type: '',
-        key: ''
+        name: ''
       }],
       stocksItem: ["moo"]
     }
@@ -351,8 +390,89 @@ import firebase from '../firebase'
       })
     })
 
+    readRef = firebase.database().ref("SellOrders")
+    var jsAccn = {
+          key: "",
+          name: "",
+          phone: "",
+          tax: "",
+          address: "",
+          date: "",
+          myitems: ""     
+    }
+    var sortItems = []
+    readRef.on('value', (snapshot) => {
+      items = []
+      snapshot.forEach( (childSnapshot) => {
+        jsAccn = {
+          key: childSnapshot.val().key,
+          name: childSnapshot.val().name,
+          phone: childSnapshot.val().phone,
+          tax: childSnapshot.val().tax,
+          address: childSnapshot.val().address,
+          date: childSnapshot.val().date,
+          myitems: childSnapshot.val().items,
+          total: 100    
+        }
+        items.push(jsAccn)
+        this.dataOrders = items
+      });
+      sortItems = []
+      var j = items.length-1
+      for(;j>=0;j--){
+        sortItems.push(items[j])
+      }
+      this.dataOrders = sortItems
+    });
+
   },
   methods: {
+      pushDB () {
+        if(this.editedIndex == -1){
+              var readRef = firebase.database().ref("SellOrders")
+              var d = new Date 
+              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+      + "/" + (d.getFullYear()+543)
+              readRef.push().set({
+                key: this.customerDetail.key,
+                name: this.customerDetail.name,
+                phone: this.customerDetail.phone,
+                tax: this.customerDetail.tax,
+                address: this.customerDetail.address,
+                date: myDate,
+                items: this.editedItem
+              })
+              this.dialog = false
+              this.dialog2 = true
+              this.customerDetail = {
+                key: '',
+                name: '',
+                phone: '',
+                address: '',
+                tax: ''
+              }
+              this.editedItem[0].quantity = ''
+              this.editedItem[0].type = ''
+              this.editedItem[0].price = ''
+        }else{
+              var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
+              readRef.update({
+                items: this.editedItem
+              })
+              this.dialog = false
+              this.dialog2 = true
+              this.customerDetail = {
+                key: '',
+                name: '',
+                phone: '',
+                address: '',
+                tax: ''
+              }
+                this.editedItem[0].quantity = ''
+                this.editedItem[0].type = ''
+                this.editedItem[0].price = ''
+        }
+      },
       close () {
         this.dialog = false
         this.customerSelect = ''
@@ -379,8 +499,7 @@ import firebase from '../firebase'
           {
             quantity: '',
             price: '',
-            type: '',
-            key: ''
+            name: ''
           }
         )
         this.prodList.push([])
@@ -395,6 +514,8 @@ import firebase from '../firebase'
       },
       priceSet (name,price,n) {
         this.editedItem[n].price = price
+        this.editedItem[n].name = name
+        console.log(this.editedItem)
         return name
       },
       getListCustomer () {
@@ -404,7 +525,26 @@ import firebase from '../firebase'
           items.push(this.customerList[i].name)
         }
         return items.sort()
-      }
+      },
+      editItem (item,myItems) {
+        this.editedIndex = item
+        this.dialog = true
+        var i = 0
+        for(i;i<this.customerList.length;i++){
+          if(this.customerList[i].key == item){
+            this.customerDetail = {
+              key: this.customerList[i].key,
+              name: this.customerList[i].name,
+              address: this.customerList[i].address,
+              phone: this.customerList[i].phone,
+              tax: this.customerList[i].tax,
+            }
+            this.customerSelect = this.customerList[i].name
+          }
+        }
+      this.editedItem = myItems
+      this.totalList = myItems.length
+    }
   },
   computed: {
     formTitle () {
@@ -425,7 +565,6 @@ import firebase from '../firebase'
           }
         }
       }
-      console.log(this.customerDetail)
     }
   }
 }
