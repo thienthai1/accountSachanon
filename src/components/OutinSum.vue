@@ -241,9 +241,11 @@ import { parse } from 'path';
             }
 
             if(parseInt(this.formatDate2().substr(3,2)) == parseInt(this.formatDate().substr(3,2))){
-                if( day >= parseInt(this.formatDate2().substr(0,2))  && day <= parseInt(this.formatDate().substr(0,2)) ){
-                    return true
-                }                
+                if(month ==  parseInt(this.formatDate().substr(3,2))){
+                    if( day >= parseInt(this.formatDate2().substr(0,2))  && day <= parseInt(this.formatDate().substr(0,2)) ){
+                        return true
+                    }
+                }            
             }
 
             return false
