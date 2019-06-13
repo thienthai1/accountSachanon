@@ -21,88 +21,43 @@
               </v-toolbar>
             <v-card-text>
               <v-container grid-list-md>
-                <v-layout>
-                      <v-switch
-                        :label="switch1 === false ? 'ลูกค้าเก่า' : 'ลูกค้าไหม่'"
-                        v-model="switch1"
-                        color="green"
-                      ></v-switch>
+                  <v-layout>
+                    <v-flex xs12 sm6 md6>
+                      <v-select
+                        :items="getListCustomer()"
+                        label="ชื่อผู้ซื้อ"
+                        v-model="customerSelect"
+                      ></v-select>
+                    </v-flex>
+                    <v-flex xs12 sm6 md6>
+                      <v-text-field 
+                      v-model="customerDetail.phone" 
+                      label="เบอร์โทรผู้ซื้อ"
+                      disabled="true"
+                      >
+                      </v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout>
+                    <v-flex xs12 sm12 md12>
+                      <v-text-field 
+                      v-model="customerDetail.address" 
+                      label="ที่อยู่ผู้ซื้อ"
+                      disabled="true"
+                      >
+                      </v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout>
+                    <v-flex xs12 sm12 md12>
+                      <v-text-field 
+                      v-model="customerDetail.tax" 
+                      label="เลขที่ผู้เสียภาษี"
+                      disabled="true"
+                      >
+                      </v-text-field>
+                    </v-flex>
                 </v-layout>
-               <template v-if="switch1==false"><!--ลูกค้าเก่า-->
-                        <v-layout>
-                        <v-flex xs12 sm6 md6>
-                          <v-select
-                            :items="getListCustomer()"
-                            label="ชื่อผู้ซื้อ"
-                            v-model="customerSelect"
-                          ></v-select>
-                        </v-flex>
-                        <v-flex xs12 sm6 md6>
-                          <v-text-field 
-                          v-model="customerDetail.phone" 
-                          label="เบอร์โทรผู้ซื้อ"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customerDetail.address" 
-                          label="ที่อยู่ผู้ซื้อ"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customerDetail.tax" 
-                          label="เลขที่ผู้เสียภาษี"
-                          disabled="true"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                </template>
-                <template v-else>
-                        <v-layout>
-                        <v-flex xs12 sm6 md6>
-                          <v-text-field 
-                          v-model="customer.name" 
-                          label="ชื่อผู้ซื้อ"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md6>
-                          <v-text-field 
-                          v-model="customer.call" 
-                          label="เบอร์โทรผู้ซื้อ"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customer.address" 
-                          label="ที่อยู่ผู้ซื้อ"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout>
-                        <v-flex xs12 sm12 md12>
-                          <v-text-field 
-                          v-model="customer.tax" 
-                          label="เลขที่ผู้เสียภาษี"
-                          >
-                          </v-text-field>
-                        </v-flex>
-                      </v-layout>
-                </template>
                 <v-layout v-for="n in totalList">
                   <v-flex xs12 sm6 md6>
                   <v-select
@@ -152,6 +107,15 @@
                         - ลดรายการ
                       </v-btn>
                 </v-layout>
+                <layout>
+                  <v-flex xs12 sm12 md12>
+                    <v-text-field 
+                    v-model="customerDetail.remark" 
+                    label="หมายเหตุ"
+                    >
+                    </v-text-field>                    
+                  </v-flex>
+                </layout>
               </v-container>
             </v-card-text>
           <v-card-actions>
@@ -183,7 +147,7 @@
             <v-icon
               small
               class="mr-2"
-              @click="editItem(props.item.key,props.item.myitems,props.item.keyCustomer)"
+              @click="editItem(props.item.key,props.item.myitems,props.item.keyCustomer,props.item.remark)"
               v-ripple
             >
               edit
@@ -236,6 +200,7 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
+        md: 1234,
         dataOrders: [],
         dialog2: false,
         customerSelect: '',
@@ -244,7 +209,8 @@ import firebase from '../firebase'
           name: '',
           phone: '',
           address: '',
-          tax: ''
+          tax: '',
+          remark: ''
         },
         customerList: [],
         totalList: 1,
@@ -283,7 +249,6 @@ import firebase from '../firebase'
         },
         { text: 'ชื่อลูกค้า', value: 'name',sortable: false },
         { text: 'ราคารวม', value: 'total',sortable: false },
-        { text: 'สินค้า', value: 'items',sortable: false },
         { text: '', sortable: false }
       ],
       editedItem: [{
@@ -398,7 +363,8 @@ import firebase from '../firebase'
           tax: "",
           address: "",
           date: "",
-          myitems: ""     
+          myitems: "",
+          remark: ""     
     }
     var sortItems = []
     readRef.on('value', (snapshot) => {
@@ -414,7 +380,8 @@ import firebase from '../firebase'
           address: childSnapshot.val().address,
           date: childSnapshot.val().date,
           myitems: childSnapshot.val().items,
-          total: this.calTotal(childSnapshot.val().items)    
+          total: this.calTotal(childSnapshot.val().items),
+          remark: childSnapshot.val().remark    
         }
         items.push(jsAccn)
         this.dataOrders = items
@@ -528,18 +495,20 @@ import firebase from '../firebase'
         }
         return items.sort()
       },
-      editItem (item,myItems,key) {
+      editItem (item,myItems,key,remark) {
         this.editedIndex = item
         this.dialog = true 
         var i = 0
         for(i;i<this.customerList.length;i++){
           if(this.customerList[i].key == key){
+            alert(remark)
             this.customerDetail = {
               key: this.customerList[i].key,
               name: this.customerList[i].name,
               address: this.customerList[i].address,
               phone: this.customerList[i].phone,
               tax: this.customerList[i].tax,
+              remark: remark
             }
             this.customerSelect = this.customerList[i].name
           }
