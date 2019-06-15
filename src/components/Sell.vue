@@ -107,6 +107,34 @@
                         - ลดรายการ
                       </v-btn>
                 </v-layout>
+                <v-layout justify-end>
+                  <v-flex xs12 sm2 md2>
+                    <v-text-field 
+                    v-model="customerDetail.vat" 
+                    label="VAT %"
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout justify-end>
+                  <v-flex xs12 sm2 md2>
+                    <v-text-field 
+                    v-model="customerDetail.discount" 
+                    label="ลดราคา %"
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
+                <v-layout justify-end>
+                  <v-flex xs12 sm2 md2>
+                    <v-text-field 
+                    v-model="total" 
+                    label="ราคารวม"
+                    disabled=true
+                    >
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
                 <layout>
                   <v-flex xs12 sm12 md12>
                     <v-text-field 
@@ -147,7 +175,7 @@
             <v-icon
               small
               class="mr-2"
-              @click="editItem(props.item.key,props.item.myitems,props.item.keyCustomer,props.item.remark)"
+              @click="editItem(props.item.key,props.item.myitems,props.item.keyCustomer,props.item.remark,props.item.discount)"
               v-ripple
             >
               edit
@@ -200,6 +228,7 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
+        total: '',
         md: 1234,
         dataOrders: [],
         dialog2: false,
@@ -210,7 +239,9 @@ import firebase from '../firebase'
           phone: '',
           address: '',
           tax: '',
-          remark: ''
+          remark: '',
+          discount: '',
+          vat: ''
         },
         customerList: [],
         totalList: 1,
@@ -381,7 +412,8 @@ import firebase from '../firebase'
           date: childSnapshot.val().date,
           myitems: childSnapshot.val().items,
           total: this.calTotal(childSnapshot.val().items),
-          remark: childSnapshot.val().remark    
+          remark: childSnapshot.val().remark,
+          discount: childSnapshot.val().discount   
         }
         items.push(jsAccn)
         this.dataOrders = items
@@ -410,6 +442,8 @@ import firebase from '../firebase'
                 address: this.customerDetail.address,
                 date: myDate,
                 items: this.editedItem,
+                remark: this.customerDetail.remark,
+                discount: this.customerDetail.discount
               })
               this.dialog = false
               this.dialog2 = true
@@ -418,7 +452,9 @@ import firebase from '../firebase'
                 name: '',
                 phone: '',
                 address: '',
-                tax: ''
+                tax: '',
+                remark: '',
+                discount: ''
               }
               this.editedItem[0].quantity = ''
               this.editedItem[0].type = ''
@@ -435,7 +471,8 @@ import firebase from '../firebase'
                 name: '',
                 phone: '',
                 address: '',
-                tax: ''
+                tax: '',
+                discount: ''
               }
                 this.editedItem[0].quantity = ''
                 this.editedItem[0].type = ''
@@ -451,7 +488,8 @@ import firebase from '../firebase'
           name: '',
           phone: '',
           address: '',
-          tax: ''
+          tax: '',
+          discount: ''
         } 
         setTimeout(() => {
           this.editedItem = [{
@@ -461,6 +499,7 @@ import firebase from '../firebase'
           }]
           this.editedIndex = -1
           this.totalList = 1
+          this.total = 0
         }, 300)
       },
       addItem () {
@@ -495,26 +534,26 @@ import firebase from '../firebase'
         }
         return items.sort()
       },
-      editItem (item,myItems,key,remark) {
+      editItem (item,myItems,key,remark,discount) {
+        //console.log(discount)
         this.editedIndex = item
         this.dialog = true 
         var i = 0
         for(i;i<this.customerList.length;i++){
           if(this.customerList[i].key == key){
-            alert(remark)
             this.customerDetail = {
               key: this.customerList[i].key,
               name: this.customerList[i].name,
               address: this.customerList[i].address,
               phone: this.customerList[i].phone,
               tax: this.customerList[i].tax,
-              remark: remark
+              remark: remark,
+              discount: discount
             }
             this.customerSelect = this.customerList[i].name
           }
         }
       this.editedItem = myItems
-      console.log(myItems.length)
       this.totalList = myItems.length
       },
       calTotal (items) {
@@ -548,9 +587,33 @@ import firebase from '../firebase'
             address: this.customerList[i].address,
             phone: this.customerList[i].phone,
             tax: this.customerList[i].tax,
+            remark: this.customerDetail.remark,
+            discount: this.customerDetail.discount
           }
         }
       }
+    },
+    editedItem: {
+    	deep: true,
+        handler: function () {
+          this.total = 0
+          var i
+          for(i = 0;i<this.editedItem.length;i++){
+            this.total += this.editedItem[i].quantity * this.editedItem[i].price
+          }
+        }
+    },
+    customerDetail: {
+    	deep: true,
+        handler: function () {
+          this.total = 0
+          var i
+          for(i = 0;i<this.editedItem.length;i++){
+            this.total += this.editedItem[i].quantity * this.editedItem[i].price
+          } 
+          var discount = this.customerDetail.discount / 100
+          this.total -= Math.round(this.total*discount)
+        }
     }
   }
 }
