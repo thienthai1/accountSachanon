@@ -411,7 +411,7 @@ import firebase from '../firebase'
           address: childSnapshot.val().address,
           date: childSnapshot.val().date,
           myitems: childSnapshot.val().items,
-          total: this.calTotal(childSnapshot.val().items),
+          total: this.calTotal(childSnapshot.val().items,childSnapshot.val().discount),
           remark: childSnapshot.val().remark,
           discount: childSnapshot.val().discount   
         }
@@ -462,7 +462,8 @@ import firebase from '../firebase'
         }else{
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
               readRef.update({
-                items: this.editedItem
+                items: this.editedItem,
+                discount: this.customerDetail.discount
               })
               this.dialog = false
               this.dialog2 = true
@@ -556,12 +557,14 @@ import firebase from '../firebase'
       this.editedItem = myItems
       this.totalList = myItems.length
       },
-      calTotal (items) {
+      calTotal (items,discount) {
         var total = 0
         var i
         for(i = 0;i<items.length;i++){
           total += items[i].quantity * items[i].price
         }
+        discount = discount / 100
+        total -= Math.round(total*discount)
         return total
       },
       deleteItem(key){
