@@ -167,7 +167,7 @@
             <v-icon
               small
               class="mr-2"
-              @click="printer (props.item.myitems)"
+              @click="printer (props.item.key,props.item.myitems,props.item.keyCustomer,props.item.remark,props.item.discount,props.item.vat,props.item.date)"
               v-ripple
             >
               print
@@ -395,7 +395,9 @@ import firebase from '../firebase'
           address: "",
           date: "",
           myitems: "",
-          remark: ""     
+          remark: "",
+          discount: "",
+          vat: ""     
     }
     var sortItems = []
     readRef.on('value', (snapshot) => {
@@ -429,188 +431,81 @@ import firebase from '../firebase'
 
   },
   methods: {
-        getBase64Image(img) {
-            // Create an empty canvas element
-            var canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
+        getBase64Image(url) {
+            // // Create an empty canvas element
+            // var canvas = document.createElement("canvas");
+            // canvas.width = img.width;
+            // canvas.height = img.height;
 
-            // Copy the image contents to the canvas
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
+            // // Copy the image contents to the canvas
+            // var ctx = canvas.getContext("2d");
+            // ctx.drawImage(img, 0, 0);
 
-            // Get the data-URL formatted image
-            // Firefox supports PNG and JPEG. You could check img.src to
-            // guess the original format, but be aware the using "image/jpg"
-            // will re-encode the image.
-            var dataURL = canvas.toDataURL("image/png");
+            // // Get the data-URL formatted image
+            // // Firefox supports PNG and JPEG. You could check img.src to
+            // // guess the original format, but be aware the using "image/jpg"
+            // // will re-encode the image.
+            // var dataURL = canvas.toDataURL("image/png");
 
 
-            return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+            // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+            var img = new Image();
+
+            img.setAttribute('crossOrigin', 'anonymous');
+
+            img.onload = function () {
+                var canvas = document.createElement("canvas");
+                canvas.width =this.width;
+                canvas.height =this.height;
+
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(this, 0, 0);
+
+                var dataURL = canvas.toDataURL("image/png");
+
+                alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+            };
+
+            img.src = url;
       },
-      printer (items) {
+      printer (index,items,key,remark,discount,vat,date) {
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
             // var x = document.createElement("IMG");
             // x.setAttribute("src","../assets/logo.png")
             // var dataImg = this.getBase64Image(x)
+            //var dataImg = this.getBase64Image("logo.png")
+
+            var customerDetail = {
+                key: '',
+                name: '',
+                phone: '',
+                address: '',
+                tax: '',
+                remark: '',
+                discount: '',
+                vat: ''
+              }
+            
+            var i = 0
+            for(i;i<this.customerList.length;i++){
+              if(this.customerList[i].key == key){
+                customerDetail = {
+                  key: this.customerList[i].key,
+                  name: this.customerList[i].name,
+                  address: this.customerList[i].address,
+                  phone: this.customerList[i].phone,
+                  tax: this.customerList[i].tax,
+                  remark: remark,
+                  discount: discount,
+                  vat: vat
+                }
+              }
+            }
 
             var listProd = items
             console.log(listProd)
-
-            // var listProd = [
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดตัว",
-            //     quantity: 5,
-            //     price: 130
-            //   },
-            //   {
-            //     product: "ผ้าปูที่นอน",
-            //     quantity: 2,
-            //     price: 620
-            //   },
-            //   {
-            //     product: "ผ้าเช็ดเท้า",
-            //     quantity: 5,
-            //     price: 130
-            //   }
-            // ]
 
             var discount = 3
             var vat = 50
@@ -666,7 +561,10 @@ import firebase from '../firebase'
             }
 
             console.log(rowKeep)
-            var totalPrice = total - vat - ((discount/100)*total)
+            var myDis = (customerDetail.discount/100) * total
+            var myVat = (customerDetail.vat/100) * total
+            var totalPrice = Math.round(total + myVat - myDis)
+            // totalPrice -= - ((discount/100)*total)
 
             var dd = {
               footer: [
@@ -702,7 +600,7 @@ import firebase from '../firebase'
                     // },
                     [
                         {
-                          text: 'ษาชานนท์ เทคซ์ไทลล์', 
+                          text: "ษาชานนท์ เทคซ์ไทลล์", 
                           style: 'header',
                           margin: [10,0,0,0]
                         },
@@ -723,7 +621,7 @@ import firebase from '../firebase'
                   columns: [
                     {
                       
-                      text: "เลขที่ผู้เสียภาษี: 3449671345",
+                      text: "เลขที่ผู้เสียภาษี: " + customerDetail.tax,
                       margin: [0,10,0,0],
                       fontSize: 11,
                       decoration: 'underline'
@@ -737,13 +635,13 @@ import firebase from '../firebase'
                     },
                     [
                       {
-                        text: "Invoice No: AA098651Z",
+                        text: "Invoice No: " + index,
                         margin: [60,0,0,0],
                         fontSize: 10,
                         decoration: 'underline'
                       },
                       {
-                        text: "วันที่: 01/05/2562",
+                        text: "วันที่: " + date,
                         margin: [60,3,0,0],
                         fontSize: 10,
                         decoration: 'underline'
@@ -754,7 +652,7 @@ import firebase from '../firebase'
                 [
                   {
                     margin: [0,10,0,0],
-                    text: "ชื่อ-นามสกุล: เธียนไท โชติชัยชรินทร์",
+                    text: "ชื่อ-นามสกุล: " + customerDetail.name,
                     fontSize: 10,
                     decoration: 'underline'
                   },
@@ -762,7 +660,7 @@ import firebase from '../firebase'
                     columns: [
                       {
                         margin: [0,2,0,0],
-                        text: "ที่อยู่: 321/1 ซอย พหลโยธิน 48 แขวงอนุเสาวรีย์ เขตบางเขน กรุงเทพมหานคร 10220",
+                        text: "ที่อยู่: " + customerDetail.address,
                         decoration: 'underline',
                         fontSize: 10,
                         width: 280 
@@ -787,12 +685,12 @@ import firebase from '../firebase'
                   columns: [
                     {
                       margin: [0,5,0,0],
-                      text: "หมายเหตุ: This is my remark on this invoice slip",
+                      text: "หมายเหตุ: " + customerDetail.remark,
                       fontSize: 11
                     },
                     [
                       {
-                        text: "ส่วนลด: " + discount + "%",
+                        text: "ส่วนลด: " + customerDetail.discount + "%",
                         alignment: 'right',
                         fontSize: 11,
                         bold: 'true',
@@ -800,7 +698,7 @@ import firebase from '../firebase'
                         margin: [5,0,7,3],
                       },
                       {
-                        text: "ภาษี: " + vat + " บาท",
+                        text: "ภาษี: " + customerDetail.vat + " บาท",
                         alignment: 'right',
                         fontSize: 11,
                         bold: 'true',
@@ -887,6 +785,7 @@ import firebase from '../firebase'
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
               readRef.update({
                 items: this.editedItem,
+                remark: this.customerDetail.remark,
                 discount: this.customerDetail.discount,
                 vat: this.customerDetail.vat
               })
@@ -991,11 +890,9 @@ import firebase from '../firebase'
         for(i = 0;i<items.length;i++){
           total += items[i].quantity * items[i].price
         }
-        discount = discount / 100
-        vat = vat / 100
-        total -= Math.round(total*discount)
-        this.total += Math.round(this.total*vat)
-        return total
+        discount = (discount / 100) * total
+        vat = (vat / 100) * total
+        return Math.round(total + vat - discount)
       },
       deleteItem(key){
         confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
@@ -1011,6 +908,7 @@ import firebase from '../firebase'
   },
   watch: {
     customerSelect: function () {
+
       var i = 0
       for(i;i<this.customerList.length;i++){
         if(this.customerList[i].name == this.customerSelect){
@@ -1045,10 +943,9 @@ import firebase from '../firebase'
           for(i = 0;i<this.editedItem.length;i++){
             this.total += this.editedItem[i].quantity * this.editedItem[i].price
           } 
-          var discount = this.customerDetail.discount / 100
-          var vat = this.customerDetail.vat / 100
-          this.total -= Math.round(this.total*discount)
-          this.total += Math.round(this.total*vat)
+          var discount = (this.customerDetail.discount / 100) * this.total
+          var vat = (this.customerDetail.vat / 100) * this.total
+          this.total = Math.round(this.total - discount + vat)
         }
     }
   }
