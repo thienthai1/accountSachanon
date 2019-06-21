@@ -72,7 +72,7 @@
           <td class="text-xs-left">{{ props.item.products }}</td>
           <td class="text-xs-left">{{ props.item.type }}</td>
           <td class="text-xs-left">{{ props.item.quantity }}</td>
-          <td class="text-xs-left">{{ props.item.price }}</td>
+          <td class="text-xs-left">{{ props.item.price }} ฿</td>
           <td class="text-xs-left">
             <v-icon
               small

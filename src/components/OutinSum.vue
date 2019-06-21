@@ -66,7 +66,7 @@
             <td>{{ props.item.date }}</td>
             <td class="text-xs-left">{{ props.item.time }}</td>
             <td class="text-xs-left">{{ props.item.name }}</td>
-            <td :class="dealStatus(props.item.status,props.item.type)" class="text-xs-left">{{ formatPrice(props.item.price) }}</td>
+            <td :class="dealStatus(props.item.status,props.item.type)" class="text-xs-left">{{ formatPrice(props.item.price) }} ฿</td>
             <td class="text-xs-left">{{ props.item.type }}</td>
             <td class="text-xs-left">{{ props.item.remark }}</td>
           <td class="text-xs-left">
