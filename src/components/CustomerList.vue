@@ -12,33 +12,33 @@
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs12 sm4 md4>
+                  <v-flex xs12 sm6 md6>
                     <v-text-field 
-                    v-model="editedItem.products" 
-                    label="รายการ">
+                    v-model="editedItem.name" 
+                    label="ชื่อ">
                     </v-text-field>
                   </v-flex>
-                  <v-flex xs12 sm4 md4>
+                  <v-flex xs12 sm6 md6>
                     <v-text-field 
-                    v-model="editedItem.quantity" 
-                    label="จำนวน">
-                    </v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm4 md4>
-                    <v-text-field 
-                    v-model="editedItem.price" 
-                    label="ราคา">
+                    v-model="editedItem.phone" 
+                    label="เบอร์โทร">
                     </v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout>
-                  <v-flex xs12 sm6 md4>
-                    <v-select
-                      :items="itemType"
-                      label="ชนิดสินค้า"
-                      solo
-                      v-model="editedItem.type"
-                    ></v-select>
+                  <v-flex xs12 sm12 md12>
+                    <v-text-field 
+                    v-model="editedItem.address" 
+                    label="ที่อยู่">
+                    </v-text-field>                    
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs12 sm6 md6>
+                    <v-text-field 
+                    v-model="editedItem.tax" 
+                    label="เลขที่ผู้เสียภาษี">
+                    </v-text-field>                    
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -58,10 +58,10 @@
         expand = "true"
       >
         <template v-slot:items="props">
-          <td class="text-xs-left">{{ props.item.products }}</td>
-          <td class="text-xs-left">{{ props.item.type }}</td>
-          <td class="text-xs-left">{{ props.item.quantity }}</td>
-          <td class="text-xs-left">{{ props.item.price }} ฿</td>
+          <td class="text-xs-left">{{ props.item.name }}</td>
+          <td class="text-xs-left">{{ props.item.address }}</td>
+          <td class="text-xs-left">{{ props.item.phone }}</td>
+          <td class="text-xs-left">{{ props.item.tax }}</td>
           <td class="text-xs-left">
             <v-icon
               small
@@ -129,30 +129,30 @@ import firebase from '../firebase'
        },
        editedIndex: -1,
        headers: [
-          { text: 'รายการ', value: 'products', sortable: true },
-          { text: 'ประเภท', value: 'type', sortable: false },
-          { text: 'จำนวน', value: 'quantity', sortable: false },
-          { text: 'ราคา', value: 'price', sortable: false },
+          { text: 'ชื่อ', value: 'name', sortable: true },
+          { text: 'ที่อยู่', value: 'address', sortable: false },
+          { text: 'เบอร์โทร', value: 'phone', sortable: false },
+          { text: 'เลขที่ผู้เสียภาษี', value: 'tax', sortable: false },
           { text: '', sortable: false}
         ],
         editedItem: {
-          products: '',
-          quantity: '',
-          price: '',
-          type: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: '',
           key: ''
         }
     }
   },
   mounted: function () {
-      var readRef = firebase.database().ref("Stocks")
+      var readRef = firebase.database().ref("Customer")
       var items = []
       var jsAccn = {
-          key: '',
-          products: '',
-          price: '',
-          type: '',
-          quantity: ''
+          name: '',
+          phone: '',
+          address: '',
+          tax: '',
+          key: ''
       }
       var sortItems = []
       readRef.on('value', (snapshot) => {
@@ -160,10 +160,10 @@ import firebase from '../firebase'
         snapshot.forEach( (childSnapshot) => {
           jsAccn = {
             key: childSnapshot.key,
-            products: childSnapshot.val().products,
-            quantity: childSnapshot.val().quantity,
-            price: childSnapshot.val().price,  
-            type: childSnapshot.val().type  
+            name: childSnapshot.val().name,
+            phone: childSnapshot.val().phone,
+            address: childSnapshot.val().address,  
+            tax: childSnapshot.val().tax  
           }
           items.push(jsAccn)
           this.myData = items
@@ -181,10 +181,11 @@ import firebase from '../firebase'
         this.dialog = false
         setTimeout(() => {
           this.editedItem = Object.assign({}, {
-          products: '',
-          quantity: '',
-          type: '',
-          price: ''
+          key: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: ''
         })
           this.editedIndex = -1
         }, 300)
@@ -192,39 +193,39 @@ import firebase from '../firebase'
       editItem (item) {
         this.editedIndex = item
         this.dialog = true
-        var myref = firebase.database().ref("Stocks/"+item)
+        var myref = firebase.database().ref("Customer/"+item)
         myref.on('value', (snapshot) => {
-          this.editedItem.products = snapshot.val().products
-          this.editedItem.quantity = snapshot.val().quantity
-          this.editedItem.type = snapshot.val().type
-          this.editedItem.price = snapshot.val().price
+          this.editedItem.name = snapshot.val().name
+          this.editedItem.phone = snapshot.val().phone
+          this.editedItem.address = snapshot.val().address
+          this.editedItem.tax = snapshot.val().tax
         })
         
       },
       pushDB () {
         if(this.editedIndex == -1){
-              var readRef = firebase.database().ref("Stocks")
+              var readRef = firebase.database().ref("Customer")
               readRef.push().set({
-                  products: this.editedItem.products,
-                  quantity: this.editedItem.quantity,
-                  type: this.editedItem.type,
-                  price: this.editedItem.price,
+                  name: this.editedItem.name,
+                  phone: this.editedItem.phone,
+                  address: this.editedItem.address,
+                  tax: this.editedItem.tax,
               })
               this.dialog = false
               this.dialog2 = true
               this.editedItem = Object.assign({}, {
-                products: '',
-                quantity: '',
-                price: '',
-                type: ''
+                name: '',
+                phone: '',
+                address: '',
+                tax: ''
               })
         }else{
-            var readRef = firebase.database().ref("Stocks/"+this.editedIndex)
+            var readRef = firebase.database().ref("Customer/"+this.editedIndex)
             readRef.update({
-                    products: this.editedItem.products,
-                    quantity: this.editedItem.quantity,
-                    price: this.editedItem.price,
-                    type: this.editedItem.type
+                    name: this.editedItem.name,
+                    phone: this.editedItem.phone,
+                    address: this.editedItem.address,
+                    tax: this.editedItem.tax
             })
             this.dialog = false
             this.dialog2 = true
@@ -233,7 +234,7 @@ import firebase from '../firebase'
       },
       deleteItem(key){
         confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
-        firebase.database().ref("Stocks/" + key).remove()
+        firebase.database().ref("Customer/" + key).remove()
       },
       openPic(pic){
         this.showPicDia = true

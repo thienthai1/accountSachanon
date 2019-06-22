@@ -376,7 +376,7 @@ import firebase from '../firebase'
       })
     })
 
-    readRef = firebase.database().ref("SellOrders")
+    readRef = firebase.database().ref("Quotation")
     var jsAccn = {
           key: "",
           name: "",
@@ -562,12 +562,12 @@ import firebase from '../firebase'
                   margin: [0,50,0,90],
                   columns: [
                     { 
-                      margin:[50,-40,0,0],
-                      text: 'ผู้รับสินค้า: _____________ \n'
+                      margin:[50,-60,0,0],
+                      text: 'ผู้ซื้อ: _____________  \nตกลงตามรายการข้างต้น'
                     },
                     { 
-                      text: 'ผู้รับเงิน: ______________',
-                      margin:[50,-40,0,0],
+                      text: ['ขอแสดงความนับถือ \n', {text: '   ษาชานนท์เทคไทลล์',margin:[30,20,20,20]}],
+                      margin:[120,-60,0,0],
                     }
                   ],
                 },
@@ -617,7 +617,7 @@ import firebase from '../firebase'
                       decoration: 'underline'
                     },
                     {
-                      text: "บิลเงินสด",
+                      text: "ใบเสนอราคา",
                       fontSize: 13,
                       margin: [60,7,0,0],
                       decoration: 'underline',
@@ -625,7 +625,7 @@ import firebase from '../firebase'
                     },
                     [
                       {
-                        text: "Invoice No: " + index,
+                        text: "Ref No: " + index,
                         margin: [60,0,0,0],
                         fontSize: 10,
                         decoration: 'underline'
@@ -746,7 +746,7 @@ import firebase from '../firebase'
       },
       pushDB () {
         if(this.editedIndex == -1){
-              var readRef = firebase.database().ref("SellOrders")
+              var readRef = firebase.database().ref("Quotation")
               var d = new Date 
               var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
       + "/" + (d.getFullYear()+543)
@@ -778,7 +778,7 @@ import firebase from '../firebase'
               this.editedItem[0].type = ''
               this.editedItem[0].price = ''
         }else{
-              var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
+              var readRef = firebase.database().ref("Quotation/"+this.editedIndex)
               readRef.update({
                 items: this.editedItem,
                 remark: this.customerDetail.remark,
@@ -892,7 +892,7 @@ import firebase from '../firebase'
       },
       deleteItem(key){
         confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
-        firebase.database().ref("SellOrders/" + key).remove().then( () => {
+        firebase.database().ref("Quotation/" + key).remove().then( () => {
           this.dialog2 = true
         })
       }

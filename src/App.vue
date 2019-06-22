@@ -41,7 +41,7 @@
         <v-list class="pa-0">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <img src="https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half/public/field_blog_entry_images/marijuana-leaf.jpg?itok=SplzNPY-">
+              <img src="https://scontent.fbkk2-5.fna.fbcdn.net/v/t1.0-9/53524821_2291823194189915_3892003289511755776_n.jpg?_nc_cat=110&_nc_oc=AQkcQxY6jzvf11ZQ9XDKwcJCYiO8BKqOYZUiQ7X-pBfk2K8qVqwaoM7lKtAZxZ2d8pQ&_nc_ht=scontent.fbkk2-5.fna&oh=b749eeb89c75d9aebf6d511fb4439137&oe=5D80C77E">
             </v-list-tile-avatar>
 
             <v-list-tile-content>

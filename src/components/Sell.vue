@@ -13,6 +13,9 @@
       <template v-if="myTabs[currentItem] == 'รายการขาย'">
         <sellCom></sellCom>
       </template>
+      <template v-if="myTabs[currentItem] == 'รายการเสนอราคา'">
+        <quotation></quotation>
+      </template>
       <template v-else-if="myTabs[currentItem] == 'รายชื่อลูกค้า'">
         <customerList></customerList>
       </template>
@@ -29,10 +32,12 @@
 import firebase from '../firebase'
 import sellCom from './sellCom.vue'
 import customerList from './CustomerList.vue'
+import quotation from './Quotation.vue'
   export default {
   components: {
     sellCom,
-    customerList
+    customerList,
+    quotation
   },
   name: 'Sell',
   data () {
