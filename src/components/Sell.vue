@@ -10,7 +10,12 @@
           </v-tab>
       </v-tabs>
       <v-divider class="my-3"></v-divider>
-      <sellCom></sellCom>
+      <template v-if="myTabs[currentItem] == 'รายการขาย'">
+        <sellCom></sellCom>
+      </template>
+      <template v-else-if="myTabs[currentItem] == 'รายชื่อลูกค้า'">
+        <customerList></customerList>
+      </template>
     </v-container>
 </template>
 
@@ -23,9 +28,11 @@
 <script>
 import firebase from '../firebase'
 import sellCom from './sellCom.vue'
+import customerList from './CustomerList.vue'
   export default {
   components: {
-    sellCom
+    sellCom,
+    customerList
   },
   name: 'Sell',
   data () {
