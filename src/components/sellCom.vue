@@ -60,7 +60,7 @@
                       class="select2"
                     >
                       <template slot="selection" slot-scope="data">
-                          <span style="font-size:15px">{{ priceSet(data.item.name,data.item.price,n-1) }}</span>
+                          <span style="font-size:15px">{{ priceSet(data.item.name,data.item.price,data.item.key,n-1) }}</span>
                       </template>
                       <template slot="item" slot-scope="data">
                         <template v-if="typeof data.item !== 'object'">
@@ -376,67 +376,67 @@ import firebase from '../firebase'
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
              if(this.stocksItem[j].type == "ผ้าเช็ดมือ"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              }
            }else if(i == 1){
              if(this.stocksItem[j].type == "ผ้าเช็ดหน้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 2){
              if(this.stocksItem[j].type == "ผ้าอเนกประสงค์"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 3){
              if(this.stocksItem[j].type == "ผ้าเช็ดตัว"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 4){
              if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 5){
              if(this.stocksItem[j].type == "ผ้าหลา"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 6){
              if(this.stocksItem[j].type == "ผ้าห่ม"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 7){
              if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 8){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 9){
              if(this.stocksItem[j].type == "ผ้าปู"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 10){
              if(this.stocksItem[j].type == "ปลอกหมอน"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 11){
              if(this.stocksItem[j].type == "ปลอกหมอนข้าง"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 12){
              if(this.stocksItem[j].type == "ปลอกผ้านวม"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 13){
              if(this.stocksItem[j].type == "ใส้ผ้านวม"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 14){
              if(this.stocksItem[j].type == "เสื้อคลุม"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 15){
              if(this.stocksItem[j].type == "รองเท้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }
          }
@@ -933,7 +933,7 @@ import firebase from '../firebase'
           this.totalList -= 1
         }
       },
-      priceSet (name,price,n) {
+      priceSet (name,price,key,n) {
         this.editedItem[n].price = price
         this.editedItem[n].name = name
         // console.log(this.editedItem)
@@ -985,6 +985,27 @@ import firebase from '../firebase'
         firebase.database().ref("SellOrders/" + key).remove().then( () => {
           this.dialog2 = true
         })
+      },
+      stockFix(item){
+        var readRef = firebase.database()
+        var i
+        for(i = 0;i<item.length;i++){
+          if(editedIndex == -1){
+              readRef.ref("Stocks/"+item.key).update({
+                quantity: this.stocksItem.quantity - item.quantity
+              })
+          }else{
+              if(item.quantity > this.editedItem[i].quantity){
+                  readRef.ref("Stocks/"+item.key).update({
+                    quantity: this.stocksItem.quantity + item.quantity
+                  })
+              }else if(item.quantity < this.editedItem[i].quantity){
+                  readRef.ref("Stocks/"+item.key).update({
+                    quantity: this.stocksItem.quantity - item.quantity
+                  })
+              }
+          }
+        }
       }
   },
   computed: {
