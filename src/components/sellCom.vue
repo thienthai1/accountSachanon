@@ -275,7 +275,8 @@ import firebase from '../firebase'
       editedItem: [{
         quantity: '',
         price: '',
-        name: ''
+        name: '',
+        key: ''
       }],
       stocksItem: ["moo"]
     }
@@ -403,7 +404,7 @@ import firebase from '../firebase'
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 7){
-             if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
+             if(this.stocksItem[j].type == "ผ้าเช็ดผม"){
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 8){
@@ -852,6 +853,7 @@ import firebase from '../firebase'
                 discount: this.customerDetail.discount,
                 vat: this.customerDetail.vat
               })
+              this.stockFix(this.editedItem)
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
@@ -867,6 +869,7 @@ import firebase from '../firebase'
               this.editedItem[0].quantity = ''
               this.editedItem[0].type = ''
               this.editedItem[0].price = ''
+              this.editedItem[0].key = ''
         }else{
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
               readRef.update({
@@ -875,6 +878,7 @@ import firebase from '../firebase'
                 discount: this.customerDetail.discount,
                 vat: this.customerDetail.vat
               })
+              this.stockFix(this.editedItem)
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
@@ -889,6 +893,7 @@ import firebase from '../firebase'
                 this.editedItem[0].quantity = ''
                 this.editedItem[0].type = ''
                 this.editedItem[0].price = ''
+                this.editedItem[0].key = ''
         }
       },
       close () {
@@ -908,7 +913,8 @@ import firebase from '../firebase'
           this.editedItem = [{
               quantity: '',
               price: '',
-              name: ''
+              name: '',
+              key: ''
           }]
           this.editedIndex = -1
           this.totalList = 1
@@ -936,6 +942,7 @@ import firebase from '../firebase'
       priceSet (name,price,key,n) {
         this.editedItem[n].price = price
         this.editedItem[n].name = name
+        this.editedItem[n].key = key
         // console.log(this.editedItem)
         return name
       },
@@ -988,23 +995,36 @@ import firebase from '../firebase'
       },
       stockFix(item){
         var readRef = firebase.database()
-        var i
-        for(i = 0;i<item.length;i++){
-          if(editedIndex == -1){
-              readRef.ref("Stocks/"+item.key).update({
-                quantity: this.stocksItem.quantity - item.quantity
-              })
-          }else{
-              if(item.quantity > this.editedItem[i].quantity){
-                  readRef.ref("Stocks/"+item.key).update({
-                    quantity: this.stocksItem.quantity + item.quantity
-                  })
-              }else if(item.quantity < this.editedItem[i].quantity){
-                  readRef.ref("Stocks/"+item.key).update({
-                    quantity: this.stocksItem.quantity - item.quantity
-                  })
-              }
-          }
+        var myquantity;
+        if(this.editedIndex == -1){
+            var i
+            for(i = 0;i < item.length;i++){
+                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
+                firebase.database().ref("Stocks/"+item[i].key).update({
+                  quantity: myquantity - item[i].quantity  
+                })
+            }
+        }else{
+            // console.log(item)
+            var i
+            for(i = 0;i < item.length;i++){
+                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
+                  console.log(item[i].quantity)
+                  if(item[i].quantity < myquantity){
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity + item[i].quantity  
+                    })
+                  }else if(item[i].quantity > myquantity){
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity - item[i].quantity  
+                    })
+                  }
+                
+            }
         }
       }
   },
