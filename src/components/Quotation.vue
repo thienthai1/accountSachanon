@@ -303,50 +303,122 @@ import firebase from '../firebase'
          this.stocksItem = items
        })
        var i,j
-       for(i = 0;i<7;i++){
+       for(i = 0;i<16;i++){
          if(i == 0){
-            this.dataItems.push({header: "ผ้าเช็ดตัว"})
+            this.dataItems.push({header: "ผ้าเช็ดมือ"})
          }else if(i == 1){
-            this.dataItems.push({header: "ผ้าเช็ดเท้า"})
+            this.dataItems.push({header: "ผ้าเช็ดหน้า"})
          }else if(i == 2){
             this.dataItems.push({header: "ผ้าอเนกประสงค์"})          
          }else if(i == 3){
-            this.dataItems.push({header: "ผ้าหลา"})           
+            this.dataItems.push({header: "ผ้าเช็ดตัว"})           
          }else if(i == 4){
-            this.dataItems.push({header: "ผ้าเย็น"})           
+            this.dataItems.push({header: "ผ้าเช็ดเท้า"})           
          }else if(i == 5){
-            this.dataItems.push({header: "ผ้าเช็ดหน้า"})           
+            this.dataItems.push({header: "ผ้าหลา"})           
          }else if(i == 6){
+            this.dataItems.push({header: "ผ้าห่ม"})           
+         }else if(i == 7){
             this.dataItems.push({header: "ผ้าเช็ดผม"})           
+         }else if(i == 8){
+            this.dataItems.push({header: "ผ้าเย็น"})           
+         }else if(i == 9){
+            this.dataItems.push({header: "ผ้าปู"})           
+         }else if(i == 10){
+            this.dataItems.push({header: "ปลอกหมอน"})           
+         }else if(i == 11){
+            this.dataItems.push({header: "ปลอกหมอนข้าง"})           
+         }else if(i == 12){
+            this.dataItems.push({header: "ปลอกผ้านวม"})           
+         }else if(i == 13){
+            this.dataItems.push({header: "ใส้ผ้านวม"})           
+         }else if(i == 14){
+            this.dataItems.push({header: "เสื้อคลุม"})           
+         }else if(i == 15){
+            this.dataItems.push({header: "รองเท้า"})           
          }
+      //  itemType: [
+      //    'ผ้าเช็ดมือ', 
+      //    'ผ้าเช็ดหน้า', 
+      //    'ผ้าอเนกประสงค์', 
+      //    'ผ้าเช็ดตัว',
+      //    'ผ้าเช็ดเท้า',
+      //    'ผ้าหลา',
+      //    'ผ้าห่ม',
+      //    'ผ้าเช็ดผม',
+      //    'ผ้าเย็น',
+      //    'ผ้าปู',
+      //    'ปลอกหมอน',
+      //    'ปลอกหมอนข้าง',
+      //    'ปลอกผ้านวม',
+      //    'ใส้ผ้านวม',
+      //    'เสื้อคลุม',
+      //    'รองเท้า'
+      //    ],
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
-             if(this.stocksItem[j].type == "ผ้าเช็ดตัว"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+             if(this.stocksItem[j].type == "ผ้าเช็ดมือ"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              }
            }else if(i == 1){
-             if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+             if(this.stocksItem[j].type == "ผ้าเช็ดหน้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 2){
              if(this.stocksItem[j].type == "ผ้าอเนกประสงค์"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 3){
-             if(this.stocksItem[j].type == "ผ้าหลา"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+             if(this.stocksItem[j].type == "ผ้าเช็ดตัว"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 4){
-             if(this.stocksItem[j].type == "ผ้าเย็น"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+             if(this.stocksItem[j].type == "ผ้าเช็ดเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 5){
-             if(this.stocksItem[j].type == "ผ้าเช็ดหน้า"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+             if(this.stocksItem[j].type == "ผ้าหลา"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 6){
+             if(this.stocksItem[j].type == "ผ้าห่ม"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 7){
              if(this.stocksItem[j].type == "ผ้าเช็ดผม"){
-               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price})
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 8){
+             if(this.stocksItem[j].type == "ผ้าเย็น"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 9){
+             if(this.stocksItem[j].type == "ผ้าปู"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 10){
+             if(this.stocksItem[j].type == "ปลอกหมอน"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 11){
+             if(this.stocksItem[j].type == "ปลอกหมอนข้าง"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 12){
+             if(this.stocksItem[j].type == "ปลอกผ้านวม"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 13){
+             if(this.stocksItem[j].type == "ใส้ผ้านวม"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 14){
+             if(this.stocksItem[j].type == "เสื้อคลุม"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 15){
+             if(this.stocksItem[j].type == "รองเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }
          }
