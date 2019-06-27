@@ -48,7 +48,7 @@
                       </v-text-field>
                     </v-flex>
                 </v-layout>
-                <v-layout v-for="n in totalList">
+                <v-layout v-for="n in editedItem.length">
                   <v-flex xs12 sm6 md6>
                   <v-select
                       :items="dataItems"
@@ -479,7 +479,7 @@ import { parse } from 'path';
           myitems: "",
           remark: "",
           discount: "",
-          vat: ""     
+          vat: "",    
     }
     var sortItems = []
     readRef.on('value', (snapshot) => {
@@ -488,7 +488,7 @@ import { parse } from 'path';
         jsAccn = {
           // key: childSnapshot.val().key,
           key: childSnapshot.key,
-          keyCustomer: childSnapshot.val().key,
+          keyCustomer: childSnapshot.val().keyCustomer,
           name: childSnapshot.val().name,
           phone: childSnapshot.val().phone,
           tax: childSnapshot.val().tax,
@@ -498,9 +498,10 @@ import { parse } from 'path';
           total: this.calTotal(childSnapshot.val().items,childSnapshot.val().discount,childSnapshot.val().vat),
           remark: childSnapshot.val().remark,
           discount: childSnapshot.val().discount,
-          vat: childSnapshot.val().vat   
+          vat: childSnapshot.val().vat,
         }
         items.push(jsAccn)
+        console.log(items)
         this.dataOrders = items
       });
       sortItems = []
@@ -842,9 +843,9 @@ import { parse } from 'path';
               var d = new Date 
               var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
       + "/" + (d.getFullYear()+543)
-              this.stockFix(this.editedItem,this.customerDetail.key)
+              this.stockFix(this.editedItem)
               readRef.push().set({
-                key: this.customerDetail.key,
+                keyCustomer: this.customerDetail.keyCustomer,
                 name: this.customerDetail.name,
                 phone: this.customerDetail.phone,
                 tax: this.customerDetail.tax,
@@ -853,29 +854,23 @@ import { parse } from 'path';
                 items: this.editedItem,
                 remark: this.customerDetail.remark,
                 discount: this.customerDetail.discount,
-                vat: this.customerDetail.vat
+                vat: this.customerDetail.vat,
               })
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
-                key: '',
+                keyCustomer: '',
                 name: '',
                 phone: '',
                 address: '',
                 tax: '',
                 remark: '',
                 discount: '',
-                vat: ''
+                vat: '',
               }
-              // this.editedItem[0].quantity = ''
-              // this.editedItem[0].type = ''
-              // this.editedItem[0].price = ''
-              // this.editedItem[0].key = ''
-        }
-         else{
-
+        }else{
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
-              this.stockFix(this.editedItem,this.customerDetail.key)
+              this.stockFix(this.editedItem)
               readRef.update({
                 items: this.editedItem,
                 remark: this.customerDetail.remark,
@@ -885,22 +880,18 @@ import { parse } from 'path';
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
-                key: '',
+                keyCustomer: '',
                 name: '',
                 phone: '',
                 address: '',
                 tax: '',
+                remark: '',
                 discount: '',
-                vat: ''
+                vat: '',
               }
-                // this.editedItem[0].quantity = ''
-                // this.editedItem[0].type = ''
-                // this.editedItem[0].price = ''
-                // this.editedItem[0].key = ''
         }
       },
       close () {
-        console.log("come")
         this.dialog = false
         this.customerSelect = ''
         this.customerDetail = {
@@ -910,7 +901,8 @@ import { parse } from 'path';
           address: '',
           tax: '',
           discount: '',
-          vat: ''
+          vat: '',
+          remark: ''
         } 
         setTimeout(() => {
           this.editedItem = [{
@@ -930,7 +922,8 @@ import { parse } from 'path';
           {
             quantity: '',
             price: '',
-            name: ''
+            name: '',
+            key: ''
           }
         )
         // this.prodList.push([])
@@ -943,6 +936,7 @@ import { parse } from 'path';
         }
       },
       priceSet (name,price,key,n) {
+        //console.log(this.editedItem)
         this.editedItem[n].price = price
         this.editedItem[n].name = name
         this.editedItem[n].key = key
@@ -958,14 +952,13 @@ import { parse } from 'path';
         return items.sort()
       },
       editItem (item,myItems,key,remark,discount,vat) {
-        //console.log(discount)
         this.editedIndex = item
         this.dialog = true 
         var i = 0
         for(i;i<this.customerList.length;i++){
           if(this.customerList[i].key == key){
             this.customerDetail = {
-              key: this.customerList[i].key,
+              keyCustomer: this.customerList[i].keyCustomer,
               name: this.customerList[i].name,
               address: this.customerList[i].address,
               phone: this.customerList[i].phone,
@@ -978,6 +971,7 @@ import { parse } from 'path';
           }
         }
       this.editedItem = myItems
+      //console.log(this.editedItem)
       this.totalList = myItems.length
       },
       calTotal (items,discount,vat) {
@@ -996,36 +990,40 @@ import { parse } from 'path';
           this.dialog2 = true
         })
       },
-      stockFix(myitem,key){
-        //console.log(item)
-        var readRef = firebase.database()
+      stockFix(item){
         var myquantity;
-        var oldItem = firebase.database().ref("SellOrders/"+key)
-        console.log("ddssssccc")
-        console.log(oldItem.items)
         if(this.editedIndex == -1){
             var i
-            for(i = 0;i < myitem.length;i++){
-                stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
+            for(i = 0;i < item.length;i++){
+                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
                 firebase.database().ref("Stocks/"+item[i].key).update({
-                  quantity: stockQuan - myitem[i].quantity 
+                  quantity: myquantity - item[i].quantity  
                 })
             }
-        }else{
-            // console.log(item)
+        }
+        else{
+            var oldItem
+            firebase.database().ref("SellOrders/"+this.editedIndex).on('value', (snapshot) => {
+                oldItem = snapshot.val()
+            })
             var i
-            for(i = 0;i < oldItem.length;i++){
-                if(olditem[i].quantity < myitem[i].quantity){
-                  stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
-                  firebase.database().ref("Stocks/"+item[i].key).update({
-                    quantity: stockQuan - (myitem[i].quantity - olditem[i].quantity) 
-                  })
-                }else if(olditem[i].quantity > myitem[i].quantity){
-                  stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
-                  firebase.database().ref("Stocks/"+item[i].key).update({
-                    quantity: stockQuan + (olditem[i].quantity - myitem[i].quantity) 
-                  })
-                }
+            for(i = 0;i < oldItem.items.length;i++){
+                firebase.database().ref("Stocks/"+oldItem.items[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
+                  // console.log(item[i].quantity)
+                  if(item[i].quantity < oldItem.items[i].quantity){
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity + (oldItem.items[i].quantity - item[i].quantity) 
+                    })
+                  }else if(item[i].quantity > oldItem.items[i].quantity){
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity - (item[i].quantity - oldItem.items[i].quantity)  
+                    })
+                  }
+                
             }
         }
       }
@@ -1037,7 +1035,6 @@ import { parse } from 'path';
   },
   watch: {
     customerSelect: function () {
-      console.log(this.customerDetail)
       var i = 0
       for(i;i<this.customerList.length;i++){
         if(this.customerList[i].name == this.customerSelect){
@@ -1051,13 +1048,15 @@ import { parse } from 'path';
           //   // discount: this.customerDetail.discount,
           //   // vat: this.customerDetail.vat
           // }
-          this.customerDetail.key = this.customerList[i].key
+          this.customerDetail.keyCustomer = this.customerList[i].key
           this.customerDetail.name = this.customerList[i].name
           this.customerDetail.address = this.customerList[i].address
           this.customerDetail.phone = this.customerList[i].phone
           this.customerDetail.tax = this.customerList[i].tax
         }
       }
+      // console.log("view detail")
+      // console.log(this.customerDetail)
     },
     editedItem: {
     	deep: true,
