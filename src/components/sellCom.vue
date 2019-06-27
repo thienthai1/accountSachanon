@@ -214,6 +214,7 @@
 
 <script>
 import firebase from '../firebase'
+import { parse } from 'path';
   export default {
   name: 'Sell',
   data () {
@@ -841,6 +842,7 @@ import firebase from '../firebase'
               var d = new Date 
               var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
       + "/" + (d.getFullYear()+543)
+              this.stockFix(this.editedItem,this.customerDetail.key)
               readRef.push().set({
                 key: this.customerDetail.key,
                 name: this.customerDetail.name,
@@ -853,7 +855,6 @@ import firebase from '../firebase'
                 discount: this.customerDetail.discount,
                 vat: this.customerDetail.vat
               })
-              this.stockFix(this.editedItem)
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
@@ -866,19 +867,21 @@ import firebase from '../firebase'
                 discount: '',
                 vat: ''
               }
-              this.editedItem[0].quantity = ''
-              this.editedItem[0].type = ''
-              this.editedItem[0].price = ''
-              this.editedItem[0].key = ''
-        }else{
+              // this.editedItem[0].quantity = ''
+              // this.editedItem[0].type = ''
+              // this.editedItem[0].price = ''
+              // this.editedItem[0].key = ''
+        }
+         else{
+
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
+              this.stockFix(this.editedItem,this.customerDetail.key)
               readRef.update({
                 items: this.editedItem,
                 remark: this.customerDetail.remark,
                 discount: this.customerDetail.discount,
                 vat: this.customerDetail.vat
               })
-              this.stockFix(this.editedItem)
               this.dialog = false
               this.dialog2 = true
               this.customerDetail = {
@@ -890,16 +893,16 @@ import firebase from '../firebase'
                 discount: '',
                 vat: ''
               }
-                this.editedItem[0].quantity = ''
-                this.editedItem[0].type = ''
-                this.editedItem[0].price = ''
-                this.editedItem[0].key = ''
+                // this.editedItem[0].quantity = ''
+                // this.editedItem[0].type = ''
+                // this.editedItem[0].price = ''
+                // this.editedItem[0].key = ''
         }
       },
       close () {
+        console.log("come")
         this.dialog = false
         this.customerSelect = ''
-        console.log(this.editedItem)
         this.customerDetail = {
           key: '',
           name: '',
@@ -993,37 +996,36 @@ import firebase from '../firebase'
           this.dialog2 = true
         })
       },
-      stockFix(item){
+      stockFix(myitem,key){
+        //console.log(item)
         var readRef = firebase.database()
         var myquantity;
+        var oldItem = firebase.database().ref("SellOrders/"+key)
+        console.log("ddssssccc")
+        console.log(oldItem.items)
         if(this.editedIndex == -1){
             var i
-            for(i = 0;i < item.length;i++){
-                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
-                  myquantity = snapshot.val().quantity
-                })
+            for(i = 0;i < myitem.length;i++){
+                stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
                 firebase.database().ref("Stocks/"+item[i].key).update({
-                  quantity: myquantity - item[i].quantity  
+                  quantity: stockQuan - myitem[i].quantity 
                 })
             }
         }else{
             // console.log(item)
             var i
-            for(i = 0;i < item.length;i++){
-                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
-                  myquantity = snapshot.val().quantity
-                })
-                  console.log(item[i].quantity)
-                  if(item[i].quantity < myquantity){
-                    firebase.database().ref("Stocks/"+item[i].key).update({
-                      quantity: myquantity + item[i].quantity  
-                    })
-                  }else if(item[i].quantity > myquantity){
-                    firebase.database().ref("Stocks/"+item[i].key).update({
-                      quantity: myquantity - item[i].quantity  
-                    })
-                  }
-                
+            for(i = 0;i < oldItem.length;i++){
+                if(olditem[i].quantity < myitem[i].quantity){
+                  stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
+                  firebase.database().ref("Stocks/"+item[i].key).update({
+                    quantity: stockQuan - (myitem[i].quantity - olditem[i].quantity) 
+                  })
+                }else if(olditem[i].quantity > myitem[i].quantity){
+                  stockQuan = firebase.database().ref("Stocks/"+myitem[i].key)
+                  firebase.database().ref("Stocks/"+item[i].key).update({
+                    quantity: stockQuan + (olditem[i].quantity - myitem[i].quantity) 
+                  })
+                }
             }
         }
       }
