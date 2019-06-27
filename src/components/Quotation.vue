@@ -884,7 +884,8 @@ import firebase from '../firebase'
           address: '',
           tax: '',
           discount: '',
-          vat: ''
+          vat: '',
+          remark: ''
         } 
         setTimeout(() => {
           this.editedItem = [{

@@ -487,7 +487,7 @@ import firebase from '../firebase'
         jsAccn = {
           // key: childSnapshot.val().key,
           key: childSnapshot.key,
-          keyCustomer: childSnapshot.val().key,
+          keyCustomer: childSnapshot.val().keyCustomer,
           name: childSnapshot.val().name,
           phone: childSnapshot.val().phone,
           tax: childSnapshot.val().tax,
@@ -845,6 +845,7 @@ import firebase from '../firebase'
       + "/" + (d.getFullYear()+543)
               this.stockFix(this.editedItem)
               readRef.push().set({
+                key: this.customerDetail.key,
                 keyCustomer: this.customerDetail.keyCustomer,
                 name: this.customerDetail.name,
                 phone: this.customerDetail.phone,
@@ -871,7 +872,7 @@ import firebase from '../firebase'
               }
         }else{
               var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
-              this.stockFix(this.editedItem,this.customerDetail.key)
+              this.stockFix(this.customerDetail)
               readRef.update({
                 items: this.editedItem,
                 remark: this.customerDetail.remark,
@@ -901,7 +902,8 @@ import firebase from '../firebase'
           address: '',
           tax: '',
           discount: '',
-          vat: ''
+          vat: '',
+          remark: ''
         } 
         setTimeout(() => {
           this.editedItem = [{
@@ -951,14 +953,14 @@ import firebase from '../firebase'
         return items.sort()
       },
       editItem (item,myItems,key,remark,discount,vat) {
-        //console.log(discount)
         this.editedIndex = item
         this.dialog = true 
         var i = 0
         for(i;i<this.customerList.length;i++){
           if(this.customerList[i].key == key){
             this.customerDetail = {
-              key: this.customerList[i].key,
+              key: item,
+              keyCustomer: this.customerList[i].keyCustomer,
               name: this.customerList[i].name,
               address: this.customerList[i].address,
               phone: this.customerList[i].phone,
@@ -991,6 +993,7 @@ import firebase from '../firebase'
         })
       },
       stockFix(item){
+        console.log(item)
         // var readRef = firebase.database().ref("SellOrders/" + key)
         // console.log(key)
         // readRef.on('value',snapshot => {
@@ -998,19 +1001,19 @@ import firebase from '../firebase'
         // })
         //console.log("fixstock")
         //console.log(item)
-        var readRef = firebase.database()
-        var myquantity;
-        if(this.editedIndex == -1){
-            var i
-            for(i = 0;i < item.length;i++){
-                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
-                  myquantity = snapshot.val().quantity
-                })
-                firebase.database().ref("Stocks/"+item[i].key).update({
-                  quantity: myquantity - item[i].quantity  
-                })
-            }
-        }
+        // var readRef = firebase.database()
+        // var myquantity;
+        // if(this.editedIndex == -1){
+        //     var i
+        //     for(i = 0;i < item.length;i++){
+        //         firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
+        //           myquantity = snapshot.val().quantity
+        //         })
+        //         firebase.database().ref("Stocks/"+item[i].key).update({
+        //           quantity: myquantity - item[i].quantity  
+        //         })
+        //     }
+        // }
         // else{
         //      console.log(item)
         //     var i
@@ -1060,8 +1063,8 @@ import firebase from '../firebase'
           this.customerDetail.tax = this.customerList[i].tax
         }
       }
-      console.log("view dataorders")
-      console.log(this.dataOrders)
+      // console.log("view detail")
+      // console.log(this.customerDetail)
     },
     editedItem: {
     	deep: true,
