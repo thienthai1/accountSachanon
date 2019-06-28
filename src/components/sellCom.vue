@@ -215,7 +215,7 @@
 <script>
 import firebase from '../firebase'
 import { parse } from 'path';
-  export default {
+export default {
   name: 'Sell',
   data () {
     return {
@@ -304,24 +304,6 @@ import { parse } from 'path';
          items.push(jsKeep)
          this.stocksItem = items
        })
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
        var i,j
        for(i = 0;i<16;i++){
          if(i == 0){
@@ -357,24 +339,6 @@ import { parse } from 'path';
          }else if(i == 15){
             this.dataItems.push({header: "รองเท้า"})           
          }
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
              if(this.stocksItem[j].type == "ผ้าเช็ดมือ"){
@@ -515,23 +479,6 @@ import { parse } from 'path';
   },
   methods: {
         getBase64Image(url) {
-            // // Create an empty canvas element
-            // var canvas = document.createElement("canvas");
-            // canvas.width = img.width;
-            // canvas.height = img.height;
-
-            // // Copy the image contents to the canvas
-            // var ctx = canvas.getContext("2d");
-            // ctx.drawImage(img, 0, 0);
-
-            // // Get the data-URL formatted image
-            // // Firefox supports PNG and JPEG. You could check img.src to
-            // // guess the original format, but be aware the using "image/jpg"
-            // // will re-encode the image.
-            // var dataURL = canvas.toDataURL("image/png");
-
-
-            // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
             var img = new Image();
 
             img.setAttribute('crossOrigin', 'anonymous');
@@ -555,10 +502,6 @@ import { parse } from 'path';
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
-            // var x = document.createElement("IMG");
-            // x.setAttribute("src","../assets/logo.png")
-            // var dataImg = this.getBase64Image(x)
-            //var dataImg = this.getBase64Image("logo.png")
 
             var customerDetail = {
                 key: '',
@@ -917,7 +860,6 @@ import { parse } from 'path';
         }, 300)
       },
       addItem () {
-        //console.log(this.prodList)
         this.editedItem.push(
           {
             quantity: '',
@@ -926,7 +868,6 @@ import { parse } from 'path';
             key: ''
           }
         )
-        // this.prodList.push([])
         this.totalList += 1
       },
       removeItem () {
@@ -936,11 +877,9 @@ import { parse } from 'path';
         }
       },
       priceSet (name,price,key,n) {
-        //console.log(this.editedItem)
         this.editedItem[n].price = price
         this.editedItem[n].name = name
         this.editedItem[n].key = key
-        // console.log(this.editedItem)
         return name
       },
       getListCustomer () {
@@ -1001,6 +940,15 @@ import { parse } from 'path';
                 firebase.database().ref("Stocks/"+item[i].key).update({
                   quantity: myquantity - item[i].quantity  
                 })
+              var d = new Date 
+              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+              + "/" + (d.getFullYear()+543)
+              firebase.database().ref("StockHist").push().set({
+                date: myDate,
+                name: item[i].name,
+                type: "out",
+                quantity: item[i].quantity
+              })
             }
         }
         else{
@@ -1018,9 +966,27 @@ import { parse } from 'path';
                     firebase.database().ref("Stocks/"+item[i].key).update({
                       quantity: myquantity + (oldItem.items[i].quantity - item[i].quantity) 
                     })
+                    var d = new Date 
+                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+                    + "/" + (d.getFullYear()+543)
+                    firebase.database().ref("StockHist").push().set({
+                      date: myDate,
+                      name: item[i].name,
+                      type: "in",
+                      quantity: (oldItem.items[i].quantity - item[i].quantity)
+                    })
                   }else if(item[i].quantity > oldItem.items[i].quantity){
+                    var d = new Date 
+                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+                    + "/" + (d.getFullYear()+543)
                     firebase.database().ref("Stocks/"+item[i].key).update({
                       quantity: myquantity - (item[i].quantity - oldItem.items[i].quantity)  
+                    })
+                    firebase.database().ref("StockHist").push().set({
+                      date: myDate,
+                      name: item[i].name,
+                      type: "out",
+                      quantity: (item[i].quantity - oldItem.items[i].quantity)
                     })
                   }
                 
@@ -1038,16 +1004,6 @@ import { parse } from 'path';
       var i = 0
       for(i;i<this.customerList.length;i++){
         if(this.customerList[i].name == this.customerSelect){
-          // this.customerDetail = {
-          //   key: this.customerList[i].key,
-          //   name: this.customerList[i].name,
-          //   address: this.customerList[i].address,
-          //   phone: this.customerList[i].phone,
-          //   tax: this.customerList[i].tax,
-          //   // remark: this.customerDetail.remark,
-          //   // discount: this.customerDetail.discount,
-          //   // vat: this.customerDetail.vat
-          // }
           this.customerDetail.keyCustomer = this.customerList[i].key
           this.customerDetail.name = this.customerList[i].name
           this.customerDetail.address = this.customerList[i].address
@@ -1055,8 +1011,6 @@ import { parse } from 'path';
           this.customerDetail.tax = this.customerList[i].tax
         }
       }
-      // console.log("view detail")
-      // console.log(this.customerDetail)
     },
     editedItem: {
     	deep: true,
