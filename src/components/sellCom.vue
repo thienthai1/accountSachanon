@@ -64,11 +64,13 @@
                       </template>
                       <template slot="item" slot-scope="data">
                         <template v-if="typeof data.item !== 'object'">
-                          <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                          <v-list-tile-content>
+                              <v-list-tile-title style="font-size:22px" v-text="data.item"></v-list-tile-title>
+                          </v-list-tile-content>
                         </template>
                         <template v-else>
                           <v-list-tile-content>
-                            <v-list-tile-title style="font-size:15px" v-text="data.item.name"></v-list-tile-title>
+                            <v-list-tile-title style="font-size:22px" v-text="data.item.name"></v-list-tile-title>
                           </v-list-tile-content>
                         </template>
                       </template>
@@ -81,10 +83,9 @@
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12 sm3 md3>
-                    <v-text-field 
+                    <v-text-field
                     v-model="editedItem[n-1].price" 
                     label="ราคาต่อหน่วย"
-                    disabled="true"
                     >
                     </v-text-field>
                   </v-flex>
@@ -151,7 +152,7 @@
         <template v-slot:items="props">
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ props.item.total }} ฿</td>
+          <td class="text-xs-left">{{ formatPrice(props.item.total) }} ฿</td>
           <td class="text-xs-left">
 
             <v-icon
@@ -275,7 +276,7 @@ export default {
       ],
       editedItem: [{
         quantity: '',
-        price: '',
+        price: 0,
         name: '',
         key: ''
       }],
@@ -568,14 +569,14 @@ export default {
                       })  
                     }else if(j == 3){
                       columnKeep.push({
-                        text: listProd[i].price + " บาท",
+                        text: this.formatPrice(listProd[i].price) + " บาท",
                         fontSize:10,
                         alignment:"center"
                       })
                       console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
-                        text: listProd[i].price * listProd[i].quantity + " บาท",
+                        text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
                         fontSize:10,
                         alignment: 'center'
                       })
@@ -738,7 +739,7 @@ export default {
                         margin: [0,0,7,3],
                       },
                       {
-                        text: "รวม: " + totalPrice + " บาท",
+                        text: "รวม: " + this.formatPrice(totalPrice) + " บาท",
                         alignment: 'right',
                         fontSize: 11,
                         bold: 'true',
@@ -781,6 +782,7 @@ export default {
             pdfMake.createPdf(dd,null,fonts).open();
       },
       pushDB () {
+        console.log(this.editedItem)
         if(this.editedIndex == -1){
               var readRef = firebase.database().ref("SellOrders")
               var d = new Date 
@@ -863,7 +865,7 @@ export default {
         this.editedItem.push(
           {
             quantity: '',
-            price: '',
+            price: 0,
             name: '',
             key: ''
           }
@@ -877,7 +879,8 @@ export default {
         }
       },
       priceSet (name,price,key,n) {
-        this.editedItem[n].price = price
+        // alert("set price")
+        // this.editedItem[n].price = price
         this.editedItem[n].name = name
         this.editedItem[n].key = key
         return name
@@ -928,6 +931,10 @@ export default {
         firebase.database().ref("SellOrders/" + key).remove().then( () => {
           this.dialog2 = true
         })
+      },
+      formatPrice(price){
+        var p = price
+        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       },
       stockFix(item){
         var myquantity;
