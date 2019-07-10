@@ -51,6 +51,7 @@
                 <v-layout v-for="n in editedItem.length">
                   <v-flex xs12 sm6 md6>
                   <v-select
+                      :searchable="true"
                       :items="dataItems"
                       v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
@@ -84,7 +85,6 @@
                     <v-text-field 
                     v-model="editedItem[n-1].price" 
                     label="ราคาต่อหน่วย"
-                    disabled="true"
                     >
                     </v-text-field>
                   </v-flex>
@@ -877,7 +877,9 @@ export default {
         }
       },
       priceSet (name,price,key,n) {
-        this.editedItem[n].price = price
+        if(this.editedItem[n].price == ""){
+            this.editedItem[n].price = price
+        }
         this.editedItem[n].name = name
         this.editedItem[n].key = key
         return name
@@ -1015,6 +1017,7 @@ export default {
     editedItem: {
     	deep: true,
         handler: function () {
+          console.log(this.editedItem)
           this.total = 0
           var i
           for(i = 0;i<this.editedItem.length;i++){

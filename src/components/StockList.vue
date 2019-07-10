@@ -147,7 +147,7 @@ import firebase from '../firebase'
        editedIndex: -1,
        headers: [
           { text: 'รายการ', value: 'products', sortable: true },
-          { text: 'ประเภท', value: 'type', sortable: false },
+          { text: 'ประเภท', value: 'type', sortable: true },
           { text: 'จำนวน', value: 'quantity', sortable: false },
           { text: 'ราคา', value: 'price', sortable: false },
           { text: '', sortable: false}
