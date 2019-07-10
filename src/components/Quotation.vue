@@ -84,7 +84,6 @@
                     <v-text-field 
                     v-model="editedItem[n-1].price" 
                     label="ราคาต่อหน่วย"
-                    disabled="true"
                     >
                     </v-text-field>
                   </v-flex>
@@ -151,7 +150,7 @@
         <template v-slot:items="props">
           <td>{{ props.item.date }}</td>
           <td class="text-xs-left">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ props.item.total }} ฿</td>
+          <td class="text-xs-left">{{ formatPrice(props.item.total) }} ฿</td>
           <td class="text-xs-left">
 
             <v-icon
@@ -622,14 +621,14 @@ import firebase from '../firebase'
                       })  
                     }else if(j == 3){
                       columnKeep.push({
-                        text: listProd[i].price + " บาท",
+                        text: this.formatPrice(listProd[i].price) + " บาท",
                         fontSize:10,
                         alignment:"center"
                       })
                       console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
-                        text: listProd[i].price * listProd[i].quantity + " บาท",
+                        text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
                         fontSize:10,
                         alignment: 'center'
                       })
@@ -935,7 +934,7 @@ import firebase from '../firebase'
         }
       },
       priceSet (name,price,n) {
-        this.editedItem[n].price = price
+        //this.editedItem[n].price = price
         this.editedItem[n].name = name
         // console.log(this.editedItem)
         return name
@@ -986,7 +985,11 @@ import firebase from '../firebase'
         firebase.database().ref("Quotation/" + key).remove().then( () => {
           this.dialog2 = true
         })
-      }
+      },
+      formatPrice(price){
+        var p = price
+        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      },
   },
   computed: {
     formTitle () {
