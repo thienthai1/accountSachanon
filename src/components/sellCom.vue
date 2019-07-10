@@ -307,7 +307,7 @@ export default {
          this.stocksItem = items
        })
        var i,j
-       for(i = 0;i<16;i++){
+       for(i = 0;i<17;i++){
          if(i == 0){
             this.dataItems.push({header: "ผ้าเช็ดมือ"})
          }else if(i == 1){
@@ -340,6 +340,8 @@ export default {
             this.dataItems.push({header: "เสื้อคลุม"})           
          }else if(i == 15){
             this.dataItems.push({header: "รองเท้า"})           
+         }else if(i == 16){
+            this.dataItems.push({header:"อื่นๆ"})
          }
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
@@ -404,6 +406,10 @@ export default {
              } 
            }else if(i == 15){
              if(this.stocksItem[j].type == "รองเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 16){
+             if(this.stocksItem[j].type == "อื่นๆ"){
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }
