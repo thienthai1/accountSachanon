@@ -14,6 +14,8 @@
                   <v-layout>
                     <v-flex xs12 sm6 md6>
                       <v-select
+                        autocomplete 
+                        :search-input.sync="searchInput1"
                         :items="getListCustomer()"
                         label="ชื่อผู้ซื้อ"
                         v-model="customerSelect"
@@ -51,6 +53,8 @@
                 <v-layout v-for="n in totalList">
                   <v-flex xs12 sm6 md6>
                   <v-select
+                      autocomplete 
+                      :search-input.sync="searchInput2"
                       :items="dataItems"
                       v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
@@ -217,6 +221,8 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
+        searchInput1: "",
+        searchInput2: "",
         total: '',
         md: 1234,
         dataOrders: [],
@@ -301,26 +307,8 @@ import firebase from '../firebase'
          items.push(jsKeep)
          this.stocksItem = items
        })
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
        var i,j
-       for(i = 0;i<16;i++){
+       for(i = 0;i<17;i++){
          if(i == 0){
             this.dataItems.push({header: "ผ้าเช็ดมือ"})
          }else if(i == 1){
@@ -353,25 +341,9 @@ import firebase from '../firebase'
             this.dataItems.push({header: "เสื้อคลุม"})           
          }else if(i == 15){
             this.dataItems.push({header: "รองเท้า"})           
+         }else if(i == 16){
+            this.dataItems.push({header:"อื่นๆ"})
          }
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
              if(this.stocksItem[j].type == "ผ้าเช็ดมือ"){
@@ -407,6 +379,7 @@ import firebase from '../firebase'
              } 
            }else if(i == 8){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
+               console.log(this.stocksItem[j])
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 9){
@@ -435,6 +408,10 @@ import firebase from '../firebase'
              } 
            }else if(i == 15){
              if(this.stocksItem[j].type == "รองเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 16){
+             if(this.stocksItem[j].type == "อื่นๆ"){
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }

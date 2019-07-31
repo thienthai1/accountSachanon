@@ -14,6 +14,8 @@
                   <v-layout>
                     <v-flex xs12 sm6 md6>
                       <v-select
+                        autocomplete 
+                        :search-input.sync="searchInput1"
                         :items="getListCustomer()"
                         label="ชื่อผู้ซื้อ"
                         v-model="customerSelect"
@@ -51,7 +53,8 @@
                 <v-layout v-for="n in editedItem.length">
                   <v-flex xs12 sm6 md6>
                   <v-select
-                      :searchable="true"
+                      autocomplete 
+                      :search-input.sync="searchInput2"
                       :items="dataItems"
                       v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
@@ -226,6 +229,8 @@ export default {
         dataOrders: [],
         dialog2: false,
         customerSelect: '',
+        searchInput1: "",
+        searchInput2: "",
         customerDetail: {
           key: '',
           name: '',
@@ -249,15 +254,11 @@ export default {
         dataItems: [
         ],
       selected: 'A',
-      options: {
-        First: [
-          { text: 'One', value: 'A' },
-          { text: 'Two', value: 'B' }
-        ],
-        Second: [
-          { text: 'Three', value: 'C' }
-        ]
-      },
+      options: [
+        'foo',
+        'bar',
+        'baz'
+      ],
       editedIndex: -1,
       dialog: false,
       currentItem: null,
@@ -378,6 +379,7 @@ export default {
              } 
            }else if(i == 8){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
+               console.log(this.stocksItem[j])
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 9){
@@ -473,7 +475,6 @@ export default {
           vat: childSnapshot.val().vat,
         }
         items.push(jsAccn)
-        console.log(items)
         this.dataOrders = items
       });
       sortItems = []
@@ -539,7 +540,6 @@ export default {
             }
 
             var listProd = items
-            console.log(listProd)
 
             var discount = 3
             var vat = 50
@@ -580,7 +580,6 @@ export default {
                         fontSize:10,
                         alignment:"center"
                       })
-                      console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
                         text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
@@ -594,7 +593,6 @@ export default {
               columnKeep = []
             }
 
-            console.log(rowKeep)
             var myDis = (customerDetail.discount/100) * total
             var myVat = (customerDetail.vat/100) * total
             var totalPrice = Math.round(total + myVat - myDis)
@@ -789,7 +787,6 @@ export default {
             pdfMake.createPdf(dd,null,fonts).open();
       },
       pushDB () {
-        console.log(this.editedItem)
         if(this.editedIndex == -1){
               var readRef = firebase.database().ref("SellOrders")
               var d = new Date 
@@ -920,7 +917,6 @@ export default {
           }
         }
       this.editedItem = myItems
-      //console.log(this.editedItem)
       this.totalList = myItems.length
       },
       calTotal (items,discount,vat) {
@@ -975,7 +971,6 @@ export default {
                 firebase.database().ref("Stocks/"+oldItem.items[i].key).on('value', (snapshot) => {
                   myquantity = snapshot.val().quantity
                 })
-                  // console.log(item[i].quantity)
                   if(item[i].quantity < oldItem.items[i].quantity){
                     firebase.database().ref("Stocks/"+item[i].key).update({
                       quantity: myquantity + (oldItem.items[i].quantity - item[i].quantity) 
