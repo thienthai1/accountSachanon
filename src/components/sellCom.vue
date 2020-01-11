@@ -487,30 +487,30 @@ export default {
 
   },
   methods: {
-        getBase64Image(url) {
-            var img = new Image();
+        getBase64Image(img) {
+                      // Create an empty canvas element
+          var canvas = window.document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          // Copy the image contents to the canvas
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
 
-            img.setAttribute('crossOrigin', 'anonymous');
+          // Get the data-URL formatted image
+          // Firefox supports PNG and JPEG. You could check img.src to
+          // guess the original format, but be aware the using "image/jpg"
+          // will re-encode the image.
+          var dataURL = canvas.toDataURL("image/png");
 
-            img.onload = function () {
-                var canvas = document.createElement("canvas");
-                canvas.width =this.width;
-                canvas.height =this.height;
-
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this, 0, 0);
-
-                var dataURL = canvas.toDataURL("image/png");
-
-                alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-            };
-
-            img.src = url;
+          return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
       },
       printer (index,items,key,remark,discount,vat,date) {
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
+            var x = window.document.createElement("IMG");
+            x.setAttribute("src","./scn.png")
+            var dataImg = this.getBase64Image(x)
 
             var customerDetail = {
                 key: '',
@@ -623,13 +623,13 @@ export default {
               content: [
                 {
                   columns: [
-                    // {
+                    {
                       
-                    //   image: "data:image/png;base64," + dataImg,
-                    //   width: 100,
-                    //   height: 100,
+                      image: "data:image/png;base64," + dataImg,
+                      width: 100,
+                      height: 100,
                       
-                    // },
+                    },
                     [
                         {
                           text: "ษาชานนท์ เทคไทลล์", 

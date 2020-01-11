@@ -379,7 +379,6 @@ import firebase from '../firebase'
              } 
            }else if(i == 8){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
-               console.log(this.stocksItem[j])
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 9){
@@ -487,51 +486,30 @@ import firebase from '../firebase'
 
   },
   methods: {
-        getBase64Image(url) {
-            // // Create an empty canvas element
-            // var canvas = document.createElement("canvas");
-            // canvas.width = img.width;
-            // canvas.height = img.height;
+        getBase64Image(img) {
+                      // Create an empty canvas element
+          var canvas = window.document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          // Copy the image contents to the canvas
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
 
-            // // Copy the image contents to the canvas
-            // var ctx = canvas.getContext("2d");
-            // ctx.drawImage(img, 0, 0);
+          // Get the data-URL formatted image
+          // Firefox supports PNG and JPEG. You could check img.src to
+          // guess the original format, but be aware the using "image/jpg"
+          // will re-encode the image.
+          var dataURL = canvas.toDataURL("image/png");
 
-            // // Get the data-URL formatted image
-            // // Firefox supports PNG and JPEG. You could check img.src to
-            // // guess the original format, but be aware the using "image/jpg"
-            // // will re-encode the image.
-            // var dataURL = canvas.toDataURL("image/png");
-
-
-            // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-            var img = new Image();
-
-            img.setAttribute('crossOrigin', 'anonymous');
-
-            img.onload = function () {
-                var canvas = document.createElement("canvas");
-                canvas.width =this.width;
-                canvas.height =this.height;
-
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this, 0, 0);
-
-                var dataURL = canvas.toDataURL("image/png");
-
-                alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-            };
-
-            img.src = url;
+          return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
       },
       printer (index,items,key,remark,discount,vat,date) {
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
-            // var x = document.createElement("IMG");
-            // x.setAttribute("src","../assets/logo.png")
-            // var dataImg = this.getBase64Image(x)
-            //var dataImg = this.getBase64Image("logo.png")
+            var x = window.document.createElement("IMG");
+            x.setAttribute("src","./scn.png")
+            var dataImg = this.getBase64Image(x)
 
             var customerDetail = {
                 key: '',
@@ -561,7 +539,6 @@ import firebase from '../firebase'
             }
 
             var listProd = items
-            console.log(listProd)
 
             var discount = 3
             var vat = 50
@@ -602,7 +579,6 @@ import firebase from '../firebase'
                         fontSize:10,
                         alignment:"center"
                       })
-                      console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
                         text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
@@ -616,7 +592,7 @@ import firebase from '../firebase'
               columnKeep = []
             }
 
-            console.log(rowKeep)
+
             var myDis = (customerDetail.discount/100) * total
             var myVat = (customerDetail.vat/100) * total
             var totalPrice = Math.round(total + myVat - myDis)
@@ -647,13 +623,13 @@ import firebase from '../firebase'
               content: [
                 {
                   columns: [
-                    // {
+                    {
                       
-                    //   image: "data:image/png;base64," + dataImg,
-                    //   width: 100,
-                    //   height: 100,
+                      image: "data:image/png;base64," + dataImg,
+                      width: 100,
+                      height: 100,
                       
-                    // },
+                    },
                     [
                         {
                           text: "ษาชานนท์ เทคไทลล์", 
@@ -870,7 +846,6 @@ import firebase from '../firebase'
       close () {
         this.dialog = false
         this.customerSelect = ''
-        console.log(this.editedItem)
         this.customerDetail = {
           key: '',
           name: '',
@@ -893,7 +868,6 @@ import firebase from '../firebase'
         }, 300)
       },
       addItem () {
-        //console.log(this.prodList)
         this.editedItem.push(
           {
             quantity: '',
@@ -913,7 +887,6 @@ import firebase from '../firebase'
       priceSet (name,price,n) {
         //this.editedItem[n].price = price
         this.editedItem[n].name = name
-        // console.log(this.editedItem)
         return name
       },
       getListCustomer () {
@@ -925,7 +898,6 @@ import firebase from '../firebase'
         return items.sort()
       },
       editItem (item,myItems,key,remark,discount,vat) {
-        //console.log(discount)
         this.editedIndex = item
         this.dialog = true 
         var i = 0
@@ -975,7 +947,6 @@ import firebase from '../firebase'
   },
   watch: {
     customerSelect: function () {
-      console.log(this.customerDetail)
       var i = 0
       for(i;i<this.customerList.length;i++){
         if(this.customerList[i].name == this.customerSelect){
