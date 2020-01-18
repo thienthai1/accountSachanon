@@ -137,6 +137,11 @@
                     </v-text-field>                    
                   </v-flex>
                 </layout>
+                <v-layout justify-end>
+                    <v-card-actions>
+                      <v-btn small color="green" flat>+เพิ่มไปยังรายการขาย</v-btn>
+                    </v-card-actions>
+                </v-layout>
               </v-container>
             </v-card-text>
           <v-card-actions>
