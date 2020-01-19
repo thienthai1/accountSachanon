@@ -14,6 +14,8 @@
                   <v-layout>
                     <v-flex xs12 sm6 md6>
                       <v-select
+                        autocomplete 
+                        :search-input.sync="searchInput1"
                         :items="getListCustomer()"
                         label="ชื่อผู้ซื้อ"
                         v-model="customerSelect"
@@ -51,6 +53,8 @@
                 <v-layout v-for="n in totalList">
                   <v-flex xs12 sm6 md6>
                   <v-select
+                      autocomplete 
+                      :search-input.sync="searchInput2"
                       :items="dataItems"
                       v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
@@ -133,6 +137,11 @@
                     </v-text-field>                    
                   </v-flex>
                 </layout>
+                <v-layout justify-end>
+                    <v-card-actions>
+                      <v-btn :style="{'display': sellAppear}" small color="green" flat @click="addToSelling">+ เพิ่มไปยังรายการขาย</v-btn>
+                    </v-card-actions>
+                </v-layout>
               </v-container>
             </v-card-text>
           <v-card-actions>
@@ -217,6 +226,9 @@ import firebase from '../firebase'
   name: 'Sell',
   data () {
     return {
+        sellAppear: 'none',
+        searchInput1: "",
+        searchInput2: "",
         total: '',
         md: 1234,
         dataOrders: [],
@@ -301,26 +313,8 @@ import firebase from '../firebase'
          items.push(jsKeep)
          this.stocksItem = items
        })
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
        var i,j
-       for(i = 0;i<16;i++){
+       for(i = 0;i<17;i++){
          if(i == 0){
             this.dataItems.push({header: "ผ้าเช็ดมือ"})
          }else if(i == 1){
@@ -353,25 +347,9 @@ import firebase from '../firebase'
             this.dataItems.push({header: "เสื้อคลุม"})           
          }else if(i == 15){
             this.dataItems.push({header: "รองเท้า"})           
+         }else if(i == 16){
+            this.dataItems.push({header:"อื่นๆ"})
          }
-      //  itemType: [
-      //    'ผ้าเช็ดมือ', 
-      //    'ผ้าเช็ดหน้า', 
-      //    'ผ้าอเนกประสงค์', 
-      //    'ผ้าเช็ดตัว',
-      //    'ผ้าเช็ดเท้า',
-      //    'ผ้าหลา',
-      //    'ผ้าห่ม',
-      //    'ผ้าเช็ดผม',
-      //    'ผ้าเย็น',
-      //    'ผ้าปู',
-      //    'ปลอกหมอน',
-      //    'ปลอกหมอนข้าง',
-      //    'ปลอกผ้านวม',
-      //    'ใส้ผ้านวม',
-      //    'เสื้อคลุม',
-      //    'รองเท้า'
-      //    ],
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
              if(this.stocksItem[j].type == "ผ้าเช็ดมือ"){
@@ -435,6 +413,10 @@ import firebase from '../firebase'
              } 
            }else if(i == 15){
              if(this.stocksItem[j].type == "รองเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 16){
+             if(this.stocksItem[j].type == "อื่นๆ"){
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }
@@ -510,51 +492,30 @@ import firebase from '../firebase'
 
   },
   methods: {
-        getBase64Image(url) {
-            // // Create an empty canvas element
-            // var canvas = document.createElement("canvas");
-            // canvas.width = img.width;
-            // canvas.height = img.height;
+        getBase64Image(img) {
+                      // Create an empty canvas element
+          var canvas = window.document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          // Copy the image contents to the canvas
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
 
-            // // Copy the image contents to the canvas
-            // var ctx = canvas.getContext("2d");
-            // ctx.drawImage(img, 0, 0);
+          // Get the data-URL formatted image
+          // Firefox supports PNG and JPEG. You could check img.src to
+          // guess the original format, but be aware the using "image/jpg"
+          // will re-encode the image.
+          var dataURL = canvas.toDataURL("image/png");
 
-            // // Get the data-URL formatted image
-            // // Firefox supports PNG and JPEG. You could check img.src to
-            // // guess the original format, but be aware the using "image/jpg"
-            // // will re-encode the image.
-            // var dataURL = canvas.toDataURL("image/png");
-
-
-            // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-            var img = new Image();
-
-            img.setAttribute('crossOrigin', 'anonymous');
-
-            img.onload = function () {
-                var canvas = document.createElement("canvas");
-                canvas.width =this.width;
-                canvas.height =this.height;
-
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this, 0, 0);
-
-                var dataURL = canvas.toDataURL("image/png");
-
-                alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-            };
-
-            img.src = url;
+          return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
       },
       printer (index,items,key,remark,discount,vat,date) {
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
-            // var x = document.createElement("IMG");
-            // x.setAttribute("src","../assets/logo.png")
-            // var dataImg = this.getBase64Image(x)
-            //var dataImg = this.getBase64Image("logo.png")
+            var x = window.document.createElement("IMG");
+            x.setAttribute("src","./scn.png")
+            var dataImg = this.getBase64Image(x)
 
             var customerDetail = {
                 key: '',
@@ -584,7 +545,6 @@ import firebase from '../firebase'
             }
 
             var listProd = items
-            console.log(listProd)
 
             var discount = 3
             var vat = 50
@@ -625,7 +585,6 @@ import firebase from '../firebase'
                         fontSize:10,
                         alignment:"center"
                       })
-                      console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
                         text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
@@ -639,7 +598,7 @@ import firebase from '../firebase'
               columnKeep = []
             }
 
-            console.log(rowKeep)
+
             var myDis = (customerDetail.discount/100) * total
             var myVat = (customerDetail.vat/100) * total
             var totalPrice = Math.round(total + myVat - myDis)
@@ -670,13 +629,13 @@ import firebase from '../firebase'
               content: [
                 {
                   columns: [
-                    // {
+                    {
                       
-                    //   image: "data:image/png;base64," + dataImg,
-                    //   width: 100,
-                    //   height: 100,
+                      image: "data:image/png;base64," + dataImg,
+                      width: 100,
+                      height: 100,
                       
-                    // },
+                    },
                     [
                         {
                           text: "ษาชานนท์ เทคไทลล์", 
@@ -893,7 +852,6 @@ import firebase from '../firebase'
       close () {
         this.dialog = false
         this.customerSelect = ''
-        console.log(this.editedItem)
         this.customerDetail = {
           key: '',
           name: '',
@@ -916,7 +874,6 @@ import firebase from '../firebase'
         }, 300)
       },
       addItem () {
-        //console.log(this.prodList)
         this.editedItem.push(
           {
             quantity: '',
@@ -936,7 +893,6 @@ import firebase from '../firebase'
       priceSet (name,price,n) {
         //this.editedItem[n].price = price
         this.editedItem[n].name = name
-        // console.log(this.editedItem)
         return name
       },
       getListCustomer () {
@@ -948,7 +904,7 @@ import firebase from '../firebase'
         return items.sort()
       },
       editItem (item,myItems,key,remark,discount,vat) {
-        //console.log(discount)
+        this.sellAppear = 'block'
         this.editedIndex = item
         this.dialog = true 
         var i = 0
@@ -990,6 +946,36 @@ import firebase from '../firebase'
         var p = price
         return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       },
+      addToSelling(){
+        var d = new Date 
+        var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+        var readRef = firebase.database().ref("SellOrders")
+        readRef.push().set({
+          keyCustomer: this.customerDetail.key,
+          name: this.customerDetail.name,
+          phone: this.customerDetail.phone,
+          tax: this.customerDetail.tax,
+          address: this.customerDetail.address,
+          date: myDate,
+          items: this.editedItem,
+          remark: this.customerDetail.remark,
+          discount: this.customerDetail.discount,
+          vat: this.customerDetail.vat,          
+        })
+        this.dialog = false
+        this.dialog2 = true
+        this.customerDetail = {
+          keyCustomer: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: '',
+          remark: '',
+          discount: '',
+          vat: '',
+        }
+        this.sellAppear = 'none'
+      }
   },
   computed: {
     formTitle () {
@@ -998,7 +984,6 @@ import firebase from '../firebase'
   },
   watch: {
     customerSelect: function () {
-      console.log(this.customerDetail)
       var i = 0
       for(i;i<this.customerList.length;i++){
         if(this.customerList[i].name == this.customerSelect){

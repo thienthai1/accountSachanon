@@ -14,6 +14,8 @@
                   <v-layout>
                     <v-flex xs12 sm6 md6>
                       <v-select
+                        autocomplete 
+                        :search-input.sync="searchInput1"
                         :items="getListCustomer()"
                         label="ชื่อผู้ซื้อ"
                         v-model="customerSelect"
@@ -51,6 +53,8 @@
                 <v-layout v-for="n in editedItem.length">
                   <v-flex xs12 sm6 md6>
                   <v-select
+                      autocomplete 
+                      :search-input.sync="searchInput2"
                       :items="dataItems"
                       v-model="editedItem[n-1].name"
                       label="รายการสินค้า"
@@ -144,6 +148,44 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog
+        v-model="chooseBill"
+        max-width="500px"
+      >
+        <v-card>
+          <v-card-title class="title">
+            โปรดเลือกประเภทบิล
+          </v-card-title>
+          <v-card-text>
+            <v-select
+              :items="selectBill"
+              label="ประเภทบิล"
+              item-value="text"
+              v-model="myBill"
+            ></v-select>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="green"
+              text
+              flat
+              @click="createPdf"
+            >
+              ตกลง
+            </v-btn>
+            <v-btn
+              color="red"
+              text
+              flat
+              @click="chooseBill = false"
+            >
+              ยกเลิก
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-data-table
         :headers="headers"
         :items="dataOrders"
@@ -220,11 +262,25 @@ export default {
   name: 'Sell',
   data () {
     return {
+        myBill:'',
+        printerDetail:{
+          index: '',
+          items: '',
+          key: '',
+          remark: '',
+          discount: '',
+          vat: '',
+          date: ''
+        },
+        chooseBill: false,
+        selectBill: ['บิลเงินสด','ใบวางบิล'],
         total: '',
         md: 1234,
         dataOrders: [],
         dialog2: false,
         customerSelect: '',
+        searchInput1: "",
+        searchInput2: "",
         customerDetail: {
           key: '',
           name: '',
@@ -248,15 +304,11 @@ export default {
         dataItems: [
         ],
       selected: 'A',
-      options: {
-        First: [
-          { text: 'One', value: 'A' },
-          { text: 'Two', value: 'B' }
-        ],
-        Second: [
-          { text: 'Three', value: 'C' }
-        ]
-      },
+      options: [
+        'foo',
+        'bar',
+        'baz'
+      ],
       editedIndex: -1,
       dialog: false,
       currentItem: null,
@@ -306,7 +358,7 @@ export default {
          this.stocksItem = items
        })
        var i,j
-       for(i = 0;i<16;i++){
+       for(i = 0;i<17;i++){
          if(i == 0){
             this.dataItems.push({header: "ผ้าเช็ดมือ"})
          }else if(i == 1){
@@ -339,6 +391,8 @@ export default {
             this.dataItems.push({header: "เสื้อคลุม"})           
          }else if(i == 15){
             this.dataItems.push({header: "รองเท้า"})           
+         }else if(i == 16){
+            this.dataItems.push({header:"อื่นๆ"})
          }
          for(j = 0;j < this.stocksItem.length;j++){
            if(i == 0){
@@ -375,6 +429,7 @@ export default {
              } 
            }else if(i == 8){
              if(this.stocksItem[j].type == "ผ้าเย็น"){
+               console.log(this.stocksItem[j])
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }else if(i == 9){
@@ -403,6 +458,10 @@ export default {
              } 
            }else if(i == 15){
              if(this.stocksItem[j].type == "รองเท้า"){
+               this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
+             } 
+           }else if(i == 16){
+             if(this.stocksItem[j].type == "อื่นๆ"){
                this.dataItems.push({name: this.stocksItem[j].products,price: this.stocksItem[j].price,key: this.stocksItem[j].key})
              } 
            }
@@ -466,7 +525,6 @@ export default {
           vat: childSnapshot.val().vat,
         }
         items.push(jsAccn)
-        console.log(items)
         this.dataOrders = items
       });
       sortItems = []
@@ -479,30 +537,258 @@ export default {
 
   },
   methods: {
-        getBase64Image(url) {
-            var img = new Image();
+        getBase64Image(img) {
+                      // Create an empty canvas element
+          var canvas = window.document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          // Copy the image contents to the canvas
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
 
-            img.setAttribute('crossOrigin', 'anonymous');
+          // Get the data-URL formatted image
+          // Firefox supports PNG and JPEG. You could check img.src to
+          // guess the original format, but be aware the using "image/jpg"
+          // will re-encode the image.
+          var dataURL = canvas.toDataURL("image/png");
 
-            img.onload = function () {
-                var canvas = document.createElement("canvas");
-                canvas.width =this.width;
-                canvas.height =this.height;
-
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this, 0, 0);
-
-                var dataURL = canvas.toDataURL("image/png");
-
-                alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-            };
-
-            img.src = url;
+          return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
       },
       printer (index,items,key,remark,discount,vat,date) {
+            this.chooseBill = true
+            this.printerDetail = {
+              index: index,
+              items: items,
+              key: key,
+              remark: remark,
+              discount: discount,
+              vat: vat,
+              date: date,
+            }
+      },
+      pushDB () {
+        if(this.editedIndex == -1){
+              var readRef = firebase.database().ref("SellOrders")
+              var d = new Date 
+              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+      + "/" + (d.getFullYear()+543)
+              //this.stockFix(this.editedItem)
+              readRef.push().set({
+                keyCustomer: this.customerDetail.keyCustomer,
+                name: this.customerDetail.name,
+                phone: this.customerDetail.phone,
+                tax: this.customerDetail.tax,
+                address: this.customerDetail.address,
+                date: myDate,
+                items: this.editedItem,
+                remark: this.customerDetail.remark,
+                discount: this.customerDetail.discount,
+                vat: this.customerDetail.vat,
+              })
+              this.dialog = false
+              this.dialog2 = true
+              this.customerDetail = {
+                keyCustomer: '',
+                name: '',
+                phone: '',
+                address: '',
+                tax: '',
+                remark: '',
+                discount: '',
+                vat: '',
+              }
+        }else{
+              var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
+              //this.stockFix(this.editedItem)
+              readRef.update({
+                items: this.editedItem,
+                remark: this.customerDetail.remark,
+                discount: this.customerDetail.discount,
+                vat: this.customerDetail.vat
+              })
+              this.dialog = false
+              this.dialog2 = true
+              this.customerDetail = {
+                keyCustomer: '',
+                name: '',
+                phone: '',
+                address: '',
+                tax: '',
+                remark: '',
+                discount: '',
+                vat: '',
+              }
+        }
+      },
+      close () {
+        this.dialog = false
+        this.customerSelect = ''
+        this.customerDetail = {
+          key: '',
+          name: '',
+          phone: '',
+          address: '',
+          tax: '',
+          discount: '',
+          vat: '',
+          remark: ''
+        } 
+        setTimeout(() => {
+          this.editedItem = [{
+              quantity: '',
+              price: '',
+              name: '',
+              key: ''
+          }]
+          this.editedIndex = -1
+          this.totalList = 1
+          this.total = 0
+        }, 300)
+      },
+      addItem () {
+        this.editedItem.push(
+          {
+            quantity: '',
+            price: 0,
+            name: '',
+            key: ''
+          }
+        )
+        this.totalList += 1
+      },
+      removeItem () {
+        if(this.totalList > 1){
+          this.editedItem.pop()
+          this.totalList -= 1
+        }
+      },
+      priceSet (name,price,key,n) {
+        // alert("set price")
+        // this.editedItem[n].price = price
+        this.editedItem[n].name = name
+        this.editedItem[n].key = key
+        return name
+      },
+      getListCustomer () {
+        var i = 0
+        var items = []
+        for(i;i<this.customerList.length;i++){
+          items.push(this.customerList[i].name)
+        }
+        return items.sort()
+      },
+      editItem (item,myItems,key,remark,discount,vat) {
+        this.editedIndex = item
+        this.dialog = true 
+        var i = 0
+        for(i;i<this.customerList.length;i++){
+          if(this.customerList[i].key == key){
+            this.customerDetail = {
+              keyCustomer: this.customerList[i].keyCustomer,
+              name: this.customerList[i].name,
+              address: this.customerList[i].address,
+              phone: this.customerList[i].phone,
+              tax: this.customerList[i].tax,
+              remark: remark,
+              discount: discount,
+              vat: vat
+            }
+            this.customerSelect = this.customerList[i].name
+          }
+        }
+      this.editedItem = myItems
+      this.totalList = myItems.length
+      },
+      calTotal (items,discount,vat) {
+        var total = 0
+        var i
+        for(i = 0;i<items.length;i++){
+          total += items[i].quantity * items[i].price
+        }
+        discount = (discount / 100) * total
+        vat = (vat / 100) * total
+        return Math.round(total + vat - discount)
+      },
+      deleteItem(key){
+        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
+        firebase.database().ref("SellOrders/" + key).remove().then( () => {
+          this.dialog2 = true
+        })
+      },
+      formatPrice(price){
+        var p = price
+        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      },
+      stockFix(item){
+        var myquantity;
+        if(this.editedIndex == -1){
+            var i
+            for(i = 0;i < item.length;i++){
+                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
+                firebase.database().ref("Stocks/"+item[i].key).update({
+                  quantity: myquantity - item[i].quantity  
+                })
+              var d = new Date 
+              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+              + "/" + (d.getFullYear()+543)
+              firebase.database().ref("StockHist").push().set({
+                date: myDate,
+                name: item[i].name,
+                type: "out",
+                quantity: item[i].quantity
+              })
+            }
+        }
+        else{
+            var oldItem
+            firebase.database().ref("SellOrders/"+this.editedIndex).on('value', (snapshot) => {
+                oldItem = snapshot.val()
+            })
+            var i
+            for(i = 0;i < oldItem.items.length;i++){
+                firebase.database().ref("Stocks/"+oldItem.items[i].key).on('value', (snapshot) => {
+                  myquantity = snapshot.val().quantity
+                })
+                  if(item[i].quantity < oldItem.items[i].quantity){
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity + (oldItem.items[i].quantity - item[i].quantity) 
+                    })
+                    var d = new Date 
+                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+                    + "/" + (d.getFullYear()+543)
+                    firebase.database().ref("StockHist").push().set({
+                      date: myDate,
+                      name: item[i].name,
+                      type: "in",
+                      quantity: (oldItem.items[i].quantity - item[i].quantity)
+                    })
+                  }else if(item[i].quantity > oldItem.items[i].quantity){
+                    var d = new Date 
+                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
+                    + "/" + (d.getFullYear()+543)
+                    firebase.database().ref("Stocks/"+item[i].key).update({
+                      quantity: myquantity - (item[i].quantity - oldItem.items[i].quantity)  
+                    })
+                    firebase.database().ref("StockHist").push().set({
+                      date: myDate,
+                      name: item[i].name,
+                      type: "out",
+                      quantity: (item[i].quantity - oldItem.items[i].quantity)
+                    })
+                  }
+                
+            }
+        }
+      },
+      createPdf(){
             var pdfMake = require('pdfmake/build/pdfmake.js');
             var pdfFonts = require('pdfmake/build/vfs_fonts.js');
             pdfMake.vfs = pdfFonts.pdfMake.vfs;
+            var x = window.document.createElement("IMG");
+            x.setAttribute("src","./scn.png")
+            var dataImg = this.getBase64Image(x)
 
             var customerDetail = {
                 key: '',
@@ -517,22 +803,21 @@ export default {
             
             var i = 0
             for(i;i<this.customerList.length;i++){
-              if(this.customerList[i].key == key){
+              if(this.customerList[i].key == this.printerDetail.key){
                 customerDetail = {
                   key: this.customerList[i].key,
                   name: this.customerList[i].name,
                   address: this.customerList[i].address,
                   phone: this.customerList[i].phone,
                   tax: this.customerList[i].tax,
-                  remark: remark,
-                  discount: discount,
-                  vat: vat
+                  remark: this.printerDetail.remark,
+                  discount: this.printerDetail.discount,
+                  vat: this.printerDetail.vat
                 }
               }
             }
 
-            var listProd = items
-            console.log(listProd)
+            var listProd = this.printerDetail.items
 
             var discount = 3
             var vat = 50
@@ -573,7 +858,6 @@ export default {
                         fontSize:10,
                         alignment:"center"
                       })
-                      console.log(total)
                     }else if(j == 4){
                       columnKeep.push({
                         text: this.formatPrice(listProd[i].price * listProd[i].quantity) + " บาท",
@@ -587,12 +871,20 @@ export default {
               columnKeep = []
             }
 
-            console.log(rowKeep)
             var myDis = (customerDetail.discount/100) * total
             var myVat = (customerDetail.vat/100) * total
             var totalPrice = Math.round(total + myVat - myDis)
             // totalPrice -= - ((discount/100)*total)
 
+            var billName = ''
+            var billType = ''
+            if(this.myBill == 'บิลเงินสด'){
+              billName = 'บิลเงินสด'
+              billType = 'ผู้รับเงิน: รวินท์นิภา หาญวิริยะจิตต์'
+            }else{
+              billName = 'ใบวางบิล'
+              billType = 'ผู้วางบิล: รวิทนท์นิภา หาญวิริยะจิตต์'              
+            }
             var dd = {
               footer: [
                 {
@@ -603,7 +895,7 @@ export default {
                       text: 'ผู้รับสินค้า: _____________ \n'
                     },
                     { 
-                      text: 'ผู้รับเงิน: ______________',
+                      text: billType,
                       margin:[50,-40,0,0],
                     }
                   ],
@@ -618,13 +910,13 @@ export default {
               content: [
                 {
                   columns: [
-                    // {
+                    {
                       
-                    //   image: "data:image/png;base64," + dataImg,
-                    //   width: 100,
-                    //   height: 100,
+                      image: "data:image/png;base64," + dataImg,
+                      width: 100,
+                      height: 100,
                       
-                    // },
+                    },
                     [
                         {
                           text: "ษาชานนท์ เทคไทลล์", 
@@ -654,7 +946,7 @@ export default {
                       decoration: 'underline'
                     },
                     {
-                      text: "บิลเงินสด",
+                      text: billName,
                       fontSize: 13,
                       margin: [60,7,0,0],
                       decoration: 'underline',
@@ -662,13 +954,13 @@ export default {
                     },
                     [
                       {
-                        text: "Invoice No: " + index,
+                        text: "Invoice No: " + this.printerDetail.index,
                         margin: [60,0,0,0],
                         fontSize: 10,
                         decoration: 'underline'
                       },
                       {
-                        text: "วันที่: " + date,
+                        text: "วันที่: " + this.printerDetail.date,
                         margin: [60,3,0,0],
                         fontSize: 10,
                         decoration: 'underline'
@@ -780,225 +1072,7 @@ export default {
             }
             }
             pdfMake.createPdf(dd,null,fonts).open();
-      },
-      pushDB () {
-        console.log(this.editedItem)
-        if(this.editedIndex == -1){
-              var readRef = firebase.database().ref("SellOrders")
-              var d = new Date 
-              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
-      + "/" + (d.getFullYear()+543)
-              this.stockFix(this.editedItem)
-              readRef.push().set({
-                keyCustomer: this.customerDetail.keyCustomer,
-                name: this.customerDetail.name,
-                phone: this.customerDetail.phone,
-                tax: this.customerDetail.tax,
-                address: this.customerDetail.address,
-                date: myDate,
-                items: this.editedItem,
-                remark: this.customerDetail.remark,
-                discount: this.customerDetail.discount,
-                vat: this.customerDetail.vat,
-              })
-              this.dialog = false
-              this.dialog2 = true
-              this.customerDetail = {
-                keyCustomer: '',
-                name: '',
-                phone: '',
-                address: '',
-                tax: '',
-                remark: '',
-                discount: '',
-                vat: '',
-              }
-        }else{
-              var readRef = firebase.database().ref("SellOrders/"+this.editedIndex)
-              this.stockFix(this.editedItem)
-              readRef.update({
-                items: this.editedItem,
-                remark: this.customerDetail.remark,
-                discount: this.customerDetail.discount,
-                vat: this.customerDetail.vat
-              })
-              this.dialog = false
-              this.dialog2 = true
-              this.customerDetail = {
-                keyCustomer: '',
-                name: '',
-                phone: '',
-                address: '',
-                tax: '',
-                remark: '',
-                discount: '',
-                vat: '',
-              }
-        }
-      },
-      close () {
-        this.dialog = false
-        this.customerSelect = ''
-        this.customerDetail = {
-          key: '',
-          name: '',
-          phone: '',
-          address: '',
-          tax: '',
-          discount: '',
-          vat: '',
-          remark: ''
-        } 
-        setTimeout(() => {
-          this.editedItem = [{
-              quantity: '',
-              price: '',
-              name: '',
-              key: ''
-          }]
-          this.editedIndex = -1
-          this.totalList = 1
-          this.total = 0
-        }, 300)
-      },
-      addItem () {
-        this.editedItem.push(
-          {
-            quantity: '',
-            price: 0,
-            name: '',
-            key: ''
-          }
-        )
-        this.totalList += 1
-      },
-      removeItem () {
-        if(this.totalList > 1){
-          this.editedItem.pop()
-          this.totalList -= 1
-        }
-      },
-      priceSet (name,price,key,n) {
-        // alert("set price")
-        // this.editedItem[n].price = price
-        this.editedItem[n].name = name
-        this.editedItem[n].key = key
-        return name
-      },
-      getListCustomer () {
-        var i = 0
-        var items = []
-        for(i;i<this.customerList.length;i++){
-          items.push(this.customerList[i].name)
-        }
-        return items.sort()
-      },
-      editItem (item,myItems,key,remark,discount,vat) {
-        this.editedIndex = item
-        this.dialog = true 
-        var i = 0
-        for(i;i<this.customerList.length;i++){
-          if(this.customerList[i].key == key){
-            this.customerDetail = {
-              keyCustomer: this.customerList[i].keyCustomer,
-              name: this.customerList[i].name,
-              address: this.customerList[i].address,
-              phone: this.customerList[i].phone,
-              tax: this.customerList[i].tax,
-              remark: remark,
-              discount: discount,
-              vat: vat
-            }
-            this.customerSelect = this.customerList[i].name
-          }
-        }
-      this.editedItem = myItems
-      //console.log(this.editedItem)
-      this.totalList = myItems.length
-      },
-      calTotal (items,discount,vat) {
-        var total = 0
-        var i
-        for(i = 0;i<items.length;i++){
-          total += items[i].quantity * items[i].price
-        }
-        discount = (discount / 100) * total
-        vat = (vat / 100) * total
-        return Math.round(total + vat - discount)
-      },
-      deleteItem(key){
-        confirm('ต้องการลบรายการนี้ใช่หรือไม่') && 
-        firebase.database().ref("SellOrders/" + key).remove().then( () => {
-          this.dialog2 = true
-        })
-      },
-      formatPrice(price){
-        var p = price
-        return p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      },
-      stockFix(item){
-        var myquantity;
-        if(this.editedIndex == -1){
-            var i
-            for(i = 0;i < item.length;i++){
-                firebase.database().ref("Stocks/"+item[i].key).on('value', (snapshot) => {
-                  myquantity = snapshot.val().quantity
-                })
-                firebase.database().ref("Stocks/"+item[i].key).update({
-                  quantity: myquantity - item[i].quantity  
-                })
-              var d = new Date 
-              var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
-              + "/" + (d.getFullYear()+543)
-              firebase.database().ref("StockHist").push().set({
-                date: myDate,
-                name: item[i].name,
-                type: "out",
-                quantity: item[i].quantity
-              })
-            }
-        }
-        else{
-            var oldItem
-            firebase.database().ref("SellOrders/"+this.editedIndex).on('value', (snapshot) => {
-                oldItem = snapshot.val()
-            })
-            var i
-            for(i = 0;i < oldItem.items.length;i++){
-                firebase.database().ref("Stocks/"+oldItem.items[i].key).on('value', (snapshot) => {
-                  myquantity = snapshot.val().quantity
-                })
-                  // console.log(item[i].quantity)
-                  if(item[i].quantity < oldItem.items[i].quantity){
-                    firebase.database().ref("Stocks/"+item[i].key).update({
-                      quantity: myquantity + (oldItem.items[i].quantity - item[i].quantity) 
-                    })
-                    var d = new Date 
-                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
-                    + "/" + (d.getFullYear()+543)
-                    firebase.database().ref("StockHist").push().set({
-                      date: myDate,
-                      name: item[i].name,
-                      type: "in",
-                      quantity: (oldItem.items[i].quantity - item[i].quantity)
-                    })
-                  }else if(item[i].quantity > oldItem.items[i].quantity){
-                    var d = new Date 
-                    var myDate = ("0" + (d.getDate())).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2)
-                    + "/" + (d.getFullYear()+543)
-                    firebase.database().ref("Stocks/"+item[i].key).update({
-                      quantity: myquantity - (item[i].quantity - oldItem.items[i].quantity)  
-                    })
-                    firebase.database().ref("StockHist").push().set({
-                      date: myDate,
-                      name: item[i].name,
-                      type: "out",
-                      quantity: (item[i].quantity - oldItem.items[i].quantity)
-                    })
-                  }
-                
-            }
-        }
+            this.chooseBill = false   
       }
   },
   computed: {
@@ -1022,6 +1096,7 @@ export default {
     editedItem: {
     	deep: true,
         handler: function () {
+          console.log(this.editedItem)
           this.total = 0
           var i
           for(i = 0;i<this.editedItem.length;i++){

@@ -52,7 +52,8 @@ import stockHist from './StockHistory.vue'
          'ปลอกผ้านวม',
          'ใส้ผ้านวม',
          'เสื้อคลุม',
-         'รองเท้า'
+         'รองเท้า',
+         'อื่นๆ'
          ],
        testdat: {
          moo: "wrah"
