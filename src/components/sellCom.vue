@@ -165,7 +165,7 @@
               v-model="myBill"
             ></v-select>
           </v-card-text>
-          <v-card-actions>
+<!--           <v-card-actions>
             <v-btn
               color="green"
               text
@@ -179,6 +179,59 @@
               text
               flat
               @click="chooseBill = false"
+            >
+              ยกเลิก
+            </v-btn>
+          </v-card-actions> -->
+          <v-card-actions>
+            <v-btn
+              color="green"
+              text
+              flat
+              @click="billCheck"
+            >
+              ตกลง
+            </v-btn>
+            <v-btn
+              color="red"
+              text
+              flat
+              @click="chooseBill = false"
+            >
+              ยกเลิก
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog
+        v-model="deliveryBill"
+        max-width="500px"
+      >
+        <v-card>
+          <v-card-title class="title">
+            โปรดกรอกที่อยู่ในการจัดส่ง
+          </v-card-title>
+          <v-card-text>
+                <v-text-field 
+                v-model="LocationDelivery" 
+                label="ที่อยู่">
+                </v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="green"
+              text
+              flat
+              @click="createPdf"
+            >
+              ตกลง
+            </v-btn>
+            <v-btn
+              color="red"
+              text
+              flat
+              @click="deliveryBill = false"
             >
               ยกเลิก
             </v-btn>
@@ -262,6 +315,8 @@ export default {
   name: 'Sell',
   data () {
     return {
+        LocationDelivery: '',
+        deliveryBill: false,
         myBill:'',
         printerDetail:{
           index: '',
@@ -273,7 +328,7 @@ export default {
           date: ''
         },
         chooseBill: false,
-        selectBill: ['บิลเงินสด','ใบวางบิล'],
+        selectBill: ['บิลเงินสด','ใบวางบิล','บิลส่งของ'],
         total: '',
         md: 1234,
         dataOrders: [],
@@ -565,6 +620,19 @@ export default {
               vat: vat,
               date: date,
             }
+      },
+      billCheck () {
+        if(this.myBill != 'บิลส่งของ'){
+          this.createPdf()
+        }else{
+          this.deliveryBill = true
+          var i = 0
+          for(i;i<this.customerList.length;i++){
+            if(this.customerList[i].key == this.printerDetail.key){
+              this.LocationDelivery = this.customerList[i].address
+            }
+          } 
+        }
       },
       pushDB () {
         if(this.editedIndex == -1){
@@ -878,189 +946,394 @@ export default {
 
             var billName = ''
             var billType = ''
-            if(this.myBill == 'บิลเงินสด'){
-              billName = 'บิลเงินสด'
-              billType = 'ผู้รับเงิน: รวินท์นิภา หาญวิริยะจิตต์'
-            }else{
-              billName = 'ใบวางบิล'
-              billType = 'ผู้วางบิล: รวิทนท์นิภา หาญวิริยะจิตต์'              
-            }
-            var dd = {
-              footer: [
-                {
-                  margin: [0,50,0,90],
-                  columns: [
-                    { 
-                      margin:[50,-40,0,0],
-                      text: 'ผู้รับสินค้า: _____________ \n'
-                    },
-                    { 
-                      text: billType,
-                      margin:[50,-40,0,0],
-                    }
-                  ],
-                },
-                {
-                  margin:[50,-1,0,20],
-                  fontSize: "10",
-                  width: 200,
-                  text: "- หากสินค้าเสียหายหรือขาดจำนวนต้องแจ้งเป็นลายลักษณ์อักษรให้บริษัทฯทราบภายใน 7 วันนับจากวันที่ได้รับสินค้ามิฉะนั้นบริษัทฯจะถือว่าผู้ซื้อได้รับสินค้าถูกต้องเรียบร้อยแล้วตามที่ระบุไว้ในเอกสารนี้"
-                }
-              ],
-              content: [
-                {
-                  columns: [
-                    {
-                      
-                      image: "data:image/png;base64," + dataImg,
-                      width: 100,
-                      height: 100,
-                      
-                    },
-                    [
-                        {
-                          text: "ษาชานนท์ เทคไทลล์", 
-                          style: 'header',
-                          margin: [10,0,0,0]
-                        },
-                        {
-                          text: '99/414 หมู่ที่ 8 ตำบลนาเกลือ อำเถอพระสมุทรเจดีย์ จังหวัดสมุทรปราการ 10290', 
-                          style: 'subheader',
-                          margin: [10,3,0,0],
-                        },
-                        {
-                          text: 'Tel: 089-788-5439', 
-                          style: 'subheader',
-                          margin: [10,3,0,0],
-                        },
-                    ]         
-                  ],
-                },
-                {
-                  columns: [
-                    {
-                      
-                      text: "เลขที่ผู้เสียภาษี: " + customerDetail.tax,
-                      margin: [0,10,0,0],
-                      fontSize: 11,
-                      decoration: 'underline'
-                    },
-                    {
-                      text: billName,
-                      fontSize: 13,
-                      margin: [60,7,0,0],
-                      decoration: 'underline',
-                      bold: 'true'
-                    },
-                    [
-                      {
-                        text: "Invoice No: " + this.printerDetail.index,
-                        margin: [60,0,0,0],
-                        fontSize: 10,
-                        decoration: 'underline'
-                      },
-                      {
-                        text: "วันที่: " + this.printerDetail.date,
-                        margin: [60,3,0,0],
-                        fontSize: 10,
-                        decoration: 'underline'
-                      },
-                    ]       
-                  ],
-                },
-                [
+
+            // creating bill for normal bill
+
+            if(this.myBill != 'บิลส่งของ'){
+
+              if(this.myBill == 'บิลเงินสด'){
+                billName = 'บิลเงินสด'
+                billType = 'ผู้รับเงิน: รวินท์นิภา หาญวิริยะจิตต์'
+              }else{
+                billName = 'ใบวางบิล'
+                billType = 'ผู้วางบิล: รวิทนท์นิภา หาญวิริยะจิตต์'         
+              }
+
+              var dd = {
+                pageMargins: [ 40, 40, 40, 120],
+                footer: [
                   {
-                    margin: [0,10,0,0],
-                    text: "ชื่อ-นามสกุล: " + customerDetail.name,
-                    fontSize: 10,
-                    decoration: 'underline'
+                    // margin: [left, top, right, bottom]
+                    margin:[50,40,0,0],
+                    columns: [
+                      { 
+                        margin:[0,0,0,0],
+                        text: 'ผู้รับสินค้า: _____________ \n'
+                      },
+                      { 
+                        text: billType,
+                        margin:[0,0,0,0],
+                      }
+                    ],
+                  },
+                  {
+                        margin:[50,0,50,0],
+                        fontSize: 10,
+                        text: 'หากสินค้าเสียหายหรือขาดจำนวนต้องแจ้งเป็นลายลักษณ์อักษรให้บริษัทฯทราบภายใน7วันนับจากวันที่ได้รับสินค้ามิฉะนั้นบริษัทฯจะถือว่าผู้ซื้อได้รับสินค้าถูกต้องเรียบร้อยแล้วตามที่ระบุไว้ในเอกสารนี้'
+                  }
+                ],
+                content: [
+                  {
+                    columns: [
+                      {
+                        
+                        image: "data:image/png;base64," + dataImg,
+                        width: 100,
+                        height: 100,
+                        
+                      },
+                      [
+                          {
+                            text: "ษาชานนท์ เทคไทลล์", 
+                            style: 'header',
+                            margin: [10,0,0,0]
+                          },
+                          {
+                            text: '99/414 หมู่ที่ 8 ตำบลนาเกลือ อำเถอพระสมุทรเจดีย์ จังหวัดสมุทรปราการ 10290', 
+                            style: 'subheader',
+                            margin: [10,3,0,0],
+                          },
+                          {
+                            text: 'Tel: 089-788-5439', 
+                            style: 'subheader',
+                            margin: [10,3,0,0],
+                          },
+                      ]         
+                    ],
                   },
                   {
                     columns: [
                       {
-                        margin: [0,2,0,0],
-                        text: "ที่อยู่: " + customerDetail.address,
-                        decoration: 'underline',
-                        fontSize: 10,
-                        width: 280 
+                        
+                        text: "เลขที่ผู้เสียภาษี: " + customerDetail.tax,
+                        margin: [0,10,0,0],
+                        fontSize: 11,
+                        decoration: 'underline'
                       },
+                      {
+                        text: billName,
+                        fontSize: 13,
+                        margin: [60,7,0,0],
+                        decoration: 'underline',
+                        bold: 'true'
+                      },
+                      [
+                        {
+                          text: "Invoice No: " + this.printerDetail.index,
+                          margin: [60,0,0,0],
+                          fontSize: 10,
+                          decoration: 'underline'
+                        },
+                        {
+                          text: "วันที่: " + this.printerDetail.date,
+                          margin: [60,3,0,0],
+                          fontSize: 10,
+                          decoration: 'underline'
+                        },
+                      ]       
+                    ],
+                  },
+                  [
+                    {
+                      margin: [0,10,0,0],
+                      text: "ชื่อ-นามสกุล: " + customerDetail.name,
+                      fontSize: 10,
+                      decoration: 'underline'
+                    },
+                    {
+                      columns: [
+                        {
+                          margin: [0,2,0,0],
+                          text: "ที่อยู่: " + customerDetail.address,
+                          decoration: 'underline',
+                          fontSize: 10,
+                          width: 280 
+                        },
+                      ]
+                    },
+                    {
+                      margin: [0,2,0,0],
+                      text: "เบอร์โทร: " + customerDetail.phone,
+                      fontSize: 10,
+                      decoration: 'underline'
+                    },
+                  ],
+                  {
+                    margin: [0,20,0,12],
+                    style: 'tableExample',
+                    table: {
+                        widths: [50, 160, 50, 50, 153],
+                        body: rowKeep,
+                    },
+                    layout: {
+                      fillColor: function (rowIndex, node, columnIndex) {
+                        return (rowIndex % 2 === 0) ? '#eeeeff' : null;
+                      }
+                    }
+                  },
+                  {
+                    columns: [
+                      {
+                        margin: [0,5,0,0],
+                        text: "หมายเหตุ: " + customerDetail.remark,
+                        fontSize: 11
+                      },
+                      [
+                        {
+                          text: "ส่วนลด: " + customerDetail.discount + "%",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [5,0,7,3],
+                        },
+                        {
+                          text: "ภาษี: " + customerDetail.vat + "%",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [0,0,7,3],
+                        },
+                        {
+                          text: "รวม: " + this.formatPrice(totalPrice) + " บาท",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [0,0,7,0],
+                        }
+                      ]
+                    ]
+                  },
+                ],
+                styles: {
+                  header: {
+                    fontSize: 14,
+                    bold: true,
+                  },
+                  subheader: {
+                    fontSize: 10,
+                    bold: false
+                  },
+                  quote: {
+                    italics: true
+                  },
+                  small: {
+                    fontSize: 8
+                  }
+                },
+                defaultStyle: {
+                  font: 'Kanit'
+                }
+              }
+
+            }else{
+
+              billName = 'บิลส่งของ'
+            // creating bill for ใบส้งของ
+
+              var dd = {
+                pageMargins: [ 40, 40, 40, 120],
+                footer: [
+                  {
+                    // margin: [left, top, right, bottom]
+                    margin:[50,40,0,0],
+                    columns: [
+                      { 
+                        margin:[0,0,0,0],
+                        text: 'ผู้รับสินค้า: _____________ \n'
+                      },
+                      { 
+                        text: 'ผู้วางบิล: รวิทนท์นิภา หาญวิริยะจิตต์',
+                        margin:[0,0,0,0]
+                      }
                     ]
                   },
                   {
-                    margin: [0,2,0,0],
-                    text: "เบอร์โทร: " + customerDetail.phone,
-                    fontSize: 10,
-                    decoration: 'underline'
-                  },
-                ],
-                {
-                  margin: [0,20,0,12],
-                  style: 'tableExample',
-                  table: {
-                      widths: [50, 160, 50, 50, 153],
-                      body: rowKeep,
-                  },
-                  layout: {
-                    fillColor: function (rowIndex, node, columnIndex) {
-                      return (rowIndex % 2 === 0) ? '#eeeeff' : null;
-                    }
-                  }
-                },
-                {
-                  columns: [
-                    {
-                      margin: [0,5,0,0],
-                      text: "หมายเหตุ: " + customerDetail.remark,
-                      fontSize: 11
-                    },
-                    [
+                    columns: [
                       {
-                        text: "ส่วนลด: " + customerDetail.discount + "%",
-                        alignment: 'right',
-                        fontSize: 11,
-                        bold: 'true',
-                        decoration: 'underline',
-                        margin: [5,0,7,3],
-                      },
-                      {
-                        text: "ภาษี: " + customerDetail.vat + "%",
-                        alignment: 'right',
-                        fontSize: 11,
-                        bold: 'true',
-                        decoration: 'underline',
-                        margin: [0,0,7,3],
-                      },
-                      {
-                        text: "รวม: " + this.formatPrice(totalPrice) + " บาท",
-                        alignment: 'right',
-                        fontSize: 11,
-                        bold: 'true',
-                        decoration: 'underline',
-                        margin: [0,0,7,0],
+                        margin:[50,0,50,0],
+                        fontSize: 10,
+                        text: ['หากสินค้าเสียหายหรือขาดจำนวนต้องแจ้งเป็นลายลักษณ์อักษรให้บริษัทฯทราบภายใน', 
+                              '7วันนับจากวันที่ได้รับสินค้ามิฉะนั้นบริษัทฯจะถือว่าผู้ซื้อได้รับสินค้าถูกต้อง',
+                              'เรียบร้อยแล้วตามที่ระบุไว้ในเอกสารนี้']
                       }
                     ]
-                  ]
+                  }
+                ],  
+                content: [
+                  {
+                    columns: [
+                      {
+                        
+                        image: "data:image/png;base64," + dataImg,
+                        width: 100,
+                        height: 100,
+                        
+                      },
+                      [
+                          {
+                            text: "ษาชานนท์ เทคไทลล์", 
+                            style: 'header',
+                            margin: [10,0,0,0]
+                          },
+                          {
+                            text: '99/414 หมู่ที่ 8 ตำบลนาเกลือ อำเถอพระสมุทรเจดีย์ จังหวัดสมุทรปราการ 10290', 
+                            style: 'subheader',
+                            margin: [10,3,0,0],
+                          },
+                          {
+                            text: 'Tel: 089-788-5439', 
+                            style: 'subheader',
+                            margin: [10,3,0,0],
+                          },
+                      ]         
+                    ],
+                  },
+                  {
+                    columns: [
+                      {
+                        
+                        text: "เลขที่ผู้เสียภาษี: " + customerDetail.tax,
+                        margin: [0,10,0,0],
+                        fontSize: 11,
+                        decoration: 'underline'
+                      },
+                      {
+                        text: billName,
+                        fontSize: 13,
+                        margin: [60,7,0,0],
+                        decoration: 'underline',
+                        bold: 'true'
+                      },
+                      [
+                        {
+                          text: "Invoice No: " + this.printerDetail.index,
+                          margin: [60,0,0,0],
+                          fontSize: 10,
+                          decoration: 'underline'
+                        },
+                        {
+                          text: "วันที่: " + this.printerDetail.date,
+                          margin: [60,3,0,0],
+                          fontSize: 10,
+                          decoration: 'underline'
+                        }
+                      ]       
+                    ],
+                  },
+                  [
+                    {
+                      margin: [0,10,0,0],
+                      text: "ชื่อ-นามสกุล: " + customerDetail.name,
+                      fontSize: 10,
+                      decoration: 'underline'
+                    },
+                    {
+                      columns: [
+                        {
+                          margin: [0,2,0,0],
+                          text: "ที่อยู่: " + customerDetail.address,
+                          decoration: 'underline',
+                          fontSize: 10,
+                          width: 280 
+                        },
+                      ]
+                    },
+                    {
+                      margin: [0,2,0,0],
+                      text: "เบอร์โทร: " + customerDetail.phone,
+                      fontSize: 10,
+                      decoration: 'underline'
+                    },
+                    {
+                      margin: [0,10,0,0],
+                      text: "ที่อยู่ในการจัดส่ง: " + this.LocationDelivery,
+                      fontSize: 10,
+                      decoration: 'underline'
+                    }
+                  ],
+                  {
+                    margin: [0,20,0,12],
+                    style: 'tableExample',
+                    table: {
+                        widths: [50, 160, 50, 50, 153],
+                        body: rowKeep,
+                    },
+                    layout: {
+                      fillColor: function (rowIndex, node, columnIndex) {
+                        return (rowIndex % 2 === 0) ? '#eeeeff' : null;
+                      }
+                    }
+                  },
+                  {
+                    columns: [
+                      {
+                        margin: [0,5,0,0],
+                        text: "หมายเหตุ: " + customerDetail.remark,
+                        fontSize: 11
+                      },
+                      [
+                        {
+                          text: "ส่วนลด: " + customerDetail.discount + "%",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [5,0,7,3],
+                        },
+                        {
+                          text: "ภาษี: " + customerDetail.vat + "%",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [0,0,7,3],
+                        },
+                        {
+                          text: "รวม: " + this.formatPrice(totalPrice) + " บาท",
+                          alignment: 'right',
+                          fontSize: 11,
+                          bold: 'true',
+                          decoration: 'underline',
+                          margin: [0,0,7,20],
+                        }
+                      ]
+                    ]
+                  },
+                ],
+                styles: {
+                  header: {
+                    fontSize: 14,
+                    bold: true,
+                  },
+                  subheader: {
+                    fontSize: 10,
+                    bold: false
+                  },
+                  quote: {
+                    italics: true
+                  },
+                  small: {
+                    fontSize: 8
+                  }
                 },
-              ],
-              styles: {
-                header: {
-                  fontSize: 14,
-                  bold: true,
-                },
-                subheader: {
-                  fontSize: 10,
-                  bold: false
-                },
-                quote: {
-                  italics: true
-                },
-                small: {
-                  fontSize: 8
+                defaultStyle: {
+                  font: 'Kanit'
                 }
-              },
-              defaultStyle: {
-                font: 'Kanit'
               }
+
             }
 
             let fonts = {

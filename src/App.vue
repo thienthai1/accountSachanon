@@ -13,8 +13,8 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field v-model="usname" prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
-                  <v-text-field v-model="passwrd" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+                  <v-text-field v-on:keyup.enter="login(usname,passwrd,errmsg,isLogin)" v-model="usname" prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
+                  <v-text-field v-on:keyup.enter="login(usname,passwrd,errmsg,isLogin)" v-model="passwrd" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
                   <p class="red--text">{{ errmsg }}</p>
                 </v-form>
               </v-card-text>
@@ -154,7 +154,7 @@ export default {
         this.usname='',
         this.passwrd=''
       }
-    }
+    },
   },
   created () {
     if(this.$route.query.usr!=null){

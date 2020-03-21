@@ -22,3 +22,6 @@ yarn-error.log*
 
 # no firebase.js
 firebase.js
+.firebase
+
+package.json
